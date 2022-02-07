@@ -11,6 +11,7 @@ public class Lexer {
    private Collection<String> keywords;
    private Collection<String> operators;
    private Collection<String> indexes;
+   private Collection<String> sorts;
    private StreamTokenizer tok;
    
    /**
@@ -21,6 +22,7 @@ public class Lexer {
       initKeywords();
       initOperators(); 
       initIndexes(); 
+      initSorts(); 
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
@@ -85,6 +87,10 @@ public class Lexer {
    
    public boolean matchIndex() {
 	   return  tok.ttype==StreamTokenizer.TT_WORD && indexes.contains(tok.sval);
+   }
+   
+   public boolean matchSorts() {
+	   return  tok.ttype==StreamTokenizer.TT_WORD && sorts.contains(tok.sval);
    }
    
 //Methods to "eat" the current token
@@ -180,6 +186,15 @@ public class Lexer {
 	   return s; 
    }
    
+   public String eatSorts() {
+	   if (!matchSorts()) {
+		   throw new BadSyntaxException();
+	   }
+	   String s = tok.sval; 
+	   nextToken(); 
+	   return s; 
+   }
+   
    private void nextToken() {
       try {
          tok.nextToken();
@@ -192,11 +207,15 @@ public class Lexer {
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", "using",
-                               "create", "table", "int", "varchar", "view", "as", "index", "on");
+                               "create", "table", "int", "varchar", "view", "as", "index", "on", "order", "by");
    }
    
    private void initIndexes() {
 	   indexes = Arrays.asList("btree", "hash");
+   }
+   
+   private void initSorts() {
+	   sorts = Arrays.asList("desc", "asc");
    }
       
    private void initOperators() {

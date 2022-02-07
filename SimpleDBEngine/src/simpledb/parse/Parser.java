@@ -60,11 +60,17 @@ public class Parser {
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
+      HashMap<String, String> sorts = new HashMap<>(); 
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
       }
-      return new QueryData(fields, tables, pred);
+      if (lex.matchKeyword("order")) {
+          lex.eatKeyword("order");
+          lex.eatKeyword("by");
+          sorts = sortList(); 
+       }
+      return new QueryData(fields, tables, pred, sorts);
    }
    
    private List<String> selectList() {
@@ -75,6 +81,17 @@ public class Parser {
          L.addAll(selectList());
       }
       return L;
+   }
+   
+   private HashMap<String, String> sortList() {
+	   HashMap<String, String> map = new HashMap<>();
+	   
+	   map.put(lex.eatId(), lex.matchSorts() ? lex.eatSorts() : "asc");
+	   if (lex.matchDelim(',')) {
+	       lex.eatDelim(',');
+	       map.putAll(sortList());
+	   }
+	   return map; 
    }
    
    private Collection<String> tableList() {

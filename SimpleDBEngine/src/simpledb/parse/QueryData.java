@@ -11,15 +11,17 @@ import simpledb.query.*;
 public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
+   private HashMap<String, String> sorts; 
    private Predicate pred;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, HashMap<String, String> sorts) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
+      this.sorts = sorts; 
    }
    
    /**
@@ -45,6 +47,10 @@ public class QueryData {
     */
    public Predicate pred() {
       return pred;
+   }
+   
+   public HashMap<String, String> sorts() {
+	   return sorts; 
    }
    
    public String toString() {
