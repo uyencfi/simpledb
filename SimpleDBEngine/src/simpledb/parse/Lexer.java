@@ -1,7 +1,10 @@
 package simpledb.parse;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * The lexical analyzer.
@@ -9,7 +12,6 @@ import java.io.*;
  */
 public class Lexer {
    private Collection<String> keywords;
-   private Collection<String> operators;
    private Collection<String> indexes;
    private Collection<String> sorts;
    private StreamTokenizer tok;
@@ -20,14 +22,12 @@ public class Lexer {
     */
    public Lexer(String s) {
       initKeywords();
-      initOperators(); 
-      initIndexes(); 
+      initIndexes();
       initSorts(); 
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
       tok.lowerCaseMode(true); //ids and keywords are converted
-      tok.wordChars('<', '>'); // allow "<", "=" and ">" in operators 
       nextToken();
    }
    
@@ -42,16 +42,7 @@ public class Lexer {
    public boolean matchDelim(char d) {
       return d == (char)tok.ttype;
    }
-   
-   /**
-    * Returns true if the current token is a legal operator.
-    * @param d a string denoting the operator.
-    * @return true if the current token is an operator.
-    */
-   public boolean matchOpr() {
-      return tok.ttype == StreamTokenizer.TT_WORD && operators.contains(tok.sval); 
-   }
-   
+
    /**
     * Returns true if the current token is an integer.
     * @return true if the current token is an integer
@@ -108,19 +99,44 @@ public class Lexer {
       nextToken();
    }
    
-   /**
-    * Throws an exception if the current token is not an operator
-    * Otherwise, moves to the next token.
-    * @param d a string denoting the operator
-    */
-   public String eatOpr() {
-      if (!matchOpr()) {
-         throw new BadSyntaxException();
-      }
-      String opr = tok.sval;
-      nextToken();
-      return opr; 
-   }
+    /**
+     * Throws an exception if the current token is not an operator
+     * Otherwise, moves to the next token.
+     */
+    public String eatOpr() {
+        if (matchDelim('=')) {
+            nextToken();
+            return "=";
+        } else if (matchDelim('!')) {
+            nextToken();
+            if (matchDelim('=')) {
+                nextToken();
+                return "!=";
+            } else {
+                throw new BadSyntaxException();
+            }
+        } else if (matchDelim('<')) {
+            nextToken();
+            if (matchDelim('=')) {
+                nextToken();
+                return "<=";
+            } else if (matchDelim('>')) {
+                nextToken();
+                return "<>";
+            } else {
+                return "<";
+            }
+        } else if (matchDelim('>')) {
+            nextToken();
+            if (matchDelim('=')) {
+                nextToken();
+                return ">=";
+            } else {
+                return ">";
+            }
+        }
+        throw new BadSyntaxException();
+    }
    
    /**
     * Throws an exception if the current token is not 
@@ -216,9 +232,5 @@ public class Lexer {
    
    private void initSorts() {
 	   sorts = Arrays.asList("desc", "asc");
-   }
-      
-   private void initOperators() {
-	   operators = Arrays.asList("=", ">", "<", ">=", "<=", "<>"); 
    }
 }

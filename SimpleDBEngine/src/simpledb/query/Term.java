@@ -1,7 +1,7 @@
 package simpledb.query;
 
 import simpledb.plan.Plan;
-import simpledb.record.*;
+import simpledb.record.Schema;
 
 /**
  * A term is a comparison between two expressions.
@@ -18,105 +18,53 @@ public class Term {
     * @param lhs  the LHS expression
     * @param rhs  the RHS expression
     */
-   public Term(Expression lhs, Expression rhs, String opr) {
+   public Term(Expression lhs, Expression rhs) {
       this.lhs = lhs;
       this.rhs = rhs;
-      this.opr = opr; 
+      this.opr = "=";
    }
+
+    /**
+     * Creates a new Term.
+     *
+     * @param lhs the LHS expression
+     * @param rhs the RHS expression
+     * @param opr the operator
+     */
+    // Overloaded constructor
+    public Term(Expression lhs, Expression rhs, String opr) {
+        this.lhs = lhs;
+        this.rhs = rhs;
+        this.opr = opr;
+    }
    
-   /**
-    * Return true if both of the term's expressions
-    * evaluate to the same constant,
-    * with respect to the specified scan.
-    * @param s the scan
-    * @return true if both expressions have the same value in the scan
-    */
-   public boolean isSatisfied(Scan s) {
-      Constant lhsval = lhs.evaluate(s);
-      Constant rhsval = rhs.evaluate(s);
-      if (opr.equals("=")) {
-          return rhsval.equals(lhsval);
-      } else if (opr.equals(">")) {
-    	  // if opr == '>' 
-    	  return isGreater(s); 
-      } else if (opr.equals("<")) {
-    	  return isSmaller(s); 
-      } else if (opr.equals(">=")){
-    	  return isGreaterOrEqual(s); 
-      } else if (opr.equals("<=")) {
-    	  return isSmallerOrEqual(s); 
-      } else if (opr.equals("<>")) {
-    	  return isNotEqual(s); 
-      } else {
-    	  return false; 
-      }
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isSmallerOrEqual(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) <= 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isGreaterOrEqual(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) >= 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isNotEqual(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) != 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isSmaller(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) < 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * greater than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isGreater(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) > 0; 
-   }
-   
+    /**
+     * Return true if both of the term's expressions
+     * evaluate to values that satisfy the term's operator,
+     * with respect to the specified scan.
+     * @param s the scan
+     * @return true if the expressions' values in the scan satisfy the operator
+     */
+    public boolean isSatisfied(Scan s) {
+        Constant lhsval = lhs.evaluate(s);
+        Constant rhsval = rhs.evaluate(s);
+        switch (opr) {
+        case "=":
+            return lhsval.equals(rhsval);
+        case "!=":
+        case "<>":
+            return !lhsval.equals(rhsval);
+        case ">":
+            return lhsval.compareTo(rhsval) > 0;
+        case ">=":
+            return lhsval.equals(rhsval) || lhsval.compareTo(rhsval) > 0;
+        case "<":
+            return lhsval.compareTo(rhsval) < 0;
+        default:
+            return lhsval.equals(rhsval) || lhsval.compareTo(rhsval) < 0;
+        }
+    }
+
    /**
     * Calculate the extent to which selecting on the term reduces 
     * the number of records output by a query.

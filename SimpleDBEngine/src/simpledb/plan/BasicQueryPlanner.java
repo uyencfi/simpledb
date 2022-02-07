@@ -1,10 +1,13 @@
 package simpledb.plan;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import simpledb.materialize.SortPlan;
+import simpledb.metadata.MetadataMgr;
+import simpledb.parse.Parser;
+import simpledb.parse.QueryData;
 import simpledb.tx.Transaction;
-import simpledb.materialize.*;
-import simpledb.metadata.*;
-import simpledb.parse.*;
 
 /**
  * The simplest, most naive query planner possible.
@@ -46,7 +49,11 @@ public class BasicQueryPlanner implements QueryPlanner {
       
       //Step 4: Project on the field names
       p = new ProjectPlan(p, data.fields());
-      p = new SortPlan(tx, p, data.fields());
+
+      //Step 5: Sort if needed
+      if (!data.sorts().isEmpty()) {
+         p = new SortPlan(tx, p, data.sorts());
+      }
       return p;
    }
 }

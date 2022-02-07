@@ -11,6 +11,13 @@ local.properties
 .loadpath
 .recommenders
 
+.idea/
+*.iml
+out/
+studentdb/
+plannertest1/
+plannertest2/
+
 # External tool builders
 .externalToolBuilders/
 
