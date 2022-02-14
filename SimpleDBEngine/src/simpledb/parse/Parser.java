@@ -1,9 +1,15 @@
 package simpledb.parse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
-import simpledb.query.*;
-import simpledb.record.*;
+import simpledb.query.Constant;
+import simpledb.query.Expression;
+import simpledb.query.Predicate;
+import simpledb.query.Term;
+import simpledb.record.Schema;
 
 /**
  * The SimpleDB parser.
@@ -60,16 +66,16 @@ public class Parser {
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
-      HashMap<String, String> sorts = new HashMap<>(); 
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
       }
+      HashMap<String, String> sorts = new HashMap<>();
       if (lex.matchKeyword("order")) {
           lex.eatKeyword("order");
           lex.eatKeyword("by");
           sorts = sortList(); 
-       }
+      }
       return new QueryData(fields, tables, pred, sorts);
    }
    
@@ -85,7 +91,6 @@ public class Parser {
    
    private HashMap<String, String> sortList() {
 	   HashMap<String, String> map = new HashMap<>();
-	   
 	   map.put(lex.eatId(), lex.matchSorts() ? lex.eatSorts() : "asc");
 	   if (lex.matchDelim(',')) {
 	       lex.eatDelim(',');
