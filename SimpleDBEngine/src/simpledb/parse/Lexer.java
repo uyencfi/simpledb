@@ -12,6 +12,7 @@ import java.util.Collection;
  */
 public class Lexer {
    private Collection<String> keywords;
+   private Collection<String> indexes;
    private StreamTokenizer tok;
    
    /**
@@ -20,6 +21,7 @@ public class Lexer {
     */
    public Lexer(String s) {
       initKeywords();
+      initIndexes();
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
@@ -71,7 +73,15 @@ public class Lexer {
    public boolean matchId() {
       return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
    }
-   
+
+   /**
+    * Returns true if the current token is a legal word for index type
+    * (either "btree" or "hash")
+    */
+   public boolean matchIndex() {
+      return tok.ttype==StreamTokenizer.TT_WORD && indexes.contains(tok.sval);
+   }
+
 //Methods to "eat" the current token
    
    /**
@@ -181,7 +191,21 @@ public class Lexer {
       nextToken();
       return s;
    }
-   
+
+   /**
+    * Eats a word for the index type ("btree" or "hash").
+    * Throws BadSyntaxException if the current token is not an index type.
+    * @return the string value of the index type
+    */
+   public String eatIndex() {
+      if (!matchIndex()) {
+         throw new BadSyntaxException();
+      }
+      String s = tok.sval;
+      nextToken();
+      return s;
+   }
+
    private void nextToken() {
       try {
          tok.nextToken();
@@ -195,5 +219,9 @@ public class Lexer {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", 
                                "create", "table", "int", "varchar", "view", "as", "index", "on");
+   }
+
+   private void initIndexes() {
+      indexes = Arrays.asList("btree", "hash");
    }
 }

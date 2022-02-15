@@ -34,9 +34,19 @@ public class MetadataMgr {
    public String getViewDef(String viewname, Transaction tx) {
       return viewmgr.getViewDef(viewname, tx);
    }
-   
+
+   /**
+    * Creates an index using the default type (i.e. hash index).
+    */
    public void createIndex(String idxname, String tblname, String fldname, Transaction tx) {
-      idxmgr.createIndex(idxname, tblname, fldname, tx);
+      idxmgr.createIndex(idxname, tblname, fldname, "hash", tx);
+   }
+
+   /**
+    * Creates an index.
+    */
+   public void createIndex(String idxname, String tblname, String fldname, String idxtype, Transaction tx) {
+      idxmgr.createIndex(idxname, tblname, fldname, idxtype, tx);
    }
    
    public Map<String,IndexInfo> getIndexInfo(String tblname, Transaction tx) {
