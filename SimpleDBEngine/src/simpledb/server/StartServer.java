@@ -1,8 +1,10 @@
 package simpledb.server;
 
-import java.rmi.registry.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-import simpledb.jdbc.network.*;
+import simpledb.jdbc.network.RemoteDriver;
+import simpledb.jdbc.network.RemoteDriverImpl;
 
 public class StartServer {
    public static void main(String args[]) throws Exception {

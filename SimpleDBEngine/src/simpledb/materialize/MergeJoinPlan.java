@@ -1,11 +1,12 @@
 package simpledb.materialize;
 
-import simpledb.tx.Transaction;
-import simpledb.plan.Plan;
-import simpledb.query.*;
-import simpledb.record.*;
+import java.util.Arrays;
+import java.util.List;
 
-import java.util.*;
+import simpledb.plan.Plan;
+import simpledb.query.Scan;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * The Plan class for the <i>mergejoin</i> operator.
@@ -42,7 +43,7 @@ public class MergeJoinPlan implements Plan {
    /** The method first sorts its two underlying scans
      * on their join field. It then returns a mergejoin scan
      * of the two sorted table scans.
-     * @see simpledb.plan.Plan#open()
+     * @see Plan#open()
      */
    public Scan open() {
       Scan s1 = p1.open();
@@ -59,7 +60,7 @@ public class MergeJoinPlan implements Plan {
     * materialized sorted tables.
     * It does <i>not</i> include the one-time cost
     * of materializing and sorting the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return p1.blocksAccessed() + p2.blocksAccessed();
@@ -69,7 +70,7 @@ public class MergeJoinPlan implements Plan {
     * Return the number of records in the join.
     * Assuming uniform distribution, the formula is:
     * <pre> R(join(p1,p2)) = R(p1)*R(p2)/max{V(p1,F1),V(p2,F2)}</pre>
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       int maxvals = Math.max(p1.distinctValues(fldname1),
@@ -81,7 +82,7 @@ public class MergeJoinPlan implements Plan {
     * Estimate the distinct number of field values in the join.
     * Since the join does not increase or decrease field values,
     * the estimate is the same as in the appropriate underlying query.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       if (p1.schema().hasField(fldname))
@@ -93,7 +94,7 @@ public class MergeJoinPlan implements Plan {
    /**
     * Return the schema of the join,
     * which is the union of the schemas of the underlying queries.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return sch;

@@ -1,11 +1,11 @@
 package simpledb.jdbc.network;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
 import simpledb.plan.Plan;
 import simpledb.plan.Planner;
 import simpledb.tx.Transaction;
-
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 /**
  * The RMI server-side implementation of RemoteStatement.
@@ -26,7 +26,7 @@ class RemoteStatementImpl extends UnicastRemoteObject implements RemoteStatement
     * The method calls the query planner to create a plan
     * for the query. It then sends the plan to the
     * RemoteResultSetImpl constructor for processing.
-    * @see simpledb.jdbc.network.RemoteStatement#executeQuery(java.lang.String)
+    * @see RemoteStatement#executeQuery(String)
     */
    public RemoteResultSet executeQuery(String qry) throws RemoteException {
       try {
@@ -44,7 +44,7 @@ class RemoteStatementImpl extends UnicastRemoteObject implements RemoteStatement
     * Executes the specified SQL update command.
     * The method sends the command to the update planner,
     * which executes it.
-    * @see simpledb.jdbc.network.RemoteStatement#executeUpdate(java.lang.String)
+    * @see RemoteStatement#executeUpdate(String)
     */
    public int executeUpdate(String cmd) throws RemoteException {
       try {

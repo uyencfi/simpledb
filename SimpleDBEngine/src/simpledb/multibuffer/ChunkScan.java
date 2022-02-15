@@ -1,11 +1,16 @@
 package simpledb.multibuffer;
 
 import static java.sql.Types.INTEGER;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import simpledb.file.BlockId;
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
+import simpledb.record.Layout;
+import simpledb.record.RecordPage;
 import simpledb.tx.Transaction;
-import simpledb.record.*;
 
 /**
  * The class for the <i>chunk</i> operator.
@@ -41,7 +46,7 @@ public class ChunkScan implements Scan {
    }
 
    /**
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       for (int i=0; i<buffs.size(); i++) {
@@ -51,7 +56,7 @@ public class ChunkScan implements Scan {
    }
 
    /**
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       moveToBlock(startbnum);
@@ -62,7 +67,7 @@ public class ChunkScan implements Scan {
     * If there are no more records, then make
     * the next block be current.
     * If there are no more blocks in the chunk, return false.
-    * @see simpledb.query.Scan#next()  
+    * @see Scan#next()
     */
    public boolean next() {
       currentslot = rp.nextAfter(currentslot);
@@ -76,21 +81,21 @@ public class ChunkScan implements Scan {
    }
 
    /**
-    * @see simpledb.query.Scan#getInt(java.lang.String)
+    * @see Scan#getInt(String)
     */
    public int getInt(String fldname) {
       return rp.getInt(currentslot, fldname);
    }
 
    /**
-    * @see simpledb.query.Scan#getString(java.lang.String)
+    * @see Scan#getString(String)
     */
    public String getString(String fldname) {
       return rp.getString(currentslot, fldname);
    }
 
    /**
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       if (layout.schema().type(fldname) == INTEGER)
@@ -100,7 +105,7 @@ public class ChunkScan implements Scan {
    }
 
   /**
-    * @see simpledb.query.Scan#hasField(java.lang.String)
+    * @see Scan#hasField(String)
     */
    public boolean hasField(String fldname) {
       return layout.schema().hasField(fldname);

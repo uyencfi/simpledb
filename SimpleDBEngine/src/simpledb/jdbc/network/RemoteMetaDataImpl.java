@@ -1,10 +1,13 @@
 package simpledb.jdbc.network;
 
-import simpledb.record.Schema;
 import static java.sql.Types.INTEGER;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import simpledb.record.Schema;
 
 /**
  * The RMI server-side implementation of RemoteMetaData.
@@ -31,7 +34,7 @@ public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMet
    
    /**
     * Returns the size of the field list.
-    * @see simpledb.jdbc.network.RemoteMetaData#getColumnCount()
+    * @see RemoteMetaData#getColumnCount()
     */
    public int getColumnCount() throws RemoteException {
       return fields.size();
@@ -41,7 +44,7 @@ public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMet
     * Returns the field name for the specified column number.
     * In JDBC, column numbers start with 1, so the field
     * is taken from position (column-1) in the list.
-    * @see simpledb.jdbc.network.RemoteMetaData#getColumnName(int)
+    * @see RemoteMetaData#getColumnName(int)
     */
    public String getColumnName(int column) throws RemoteException {
       return fields.get(column-1);
@@ -51,7 +54,7 @@ public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMet
     * Returns the type of the specified column.
     * The method first finds the name of the field in that column,
     * and then looks up its type in the schema.
-    * @see simpledb.jdbc.network.RemoteMetaData#getColumnType(int)
+    * @see RemoteMetaData#getColumnType(int)
     */
    public int getColumnType(int column) throws RemoteException {
       String fldname = getColumnName(column);
@@ -68,7 +71,7 @@ public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMet
     * Here, the method arbitrarily chooses 6 characters,
     * which means that integers over 999,999 will  
     * probably get displayed improperly.
-    * @see simpledb.jdbc.network.RemoteMetaData#getColumnDisplaySize(int)
+    * @see RemoteMetaData#getColumnDisplaySize(int)
     */
    public int getColumnDisplaySize(int column) throws RemoteException {
       String fldname = getColumnName(column);

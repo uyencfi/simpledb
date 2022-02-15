@@ -1,9 +1,12 @@
 package simpledb.plan;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import simpledb.metadata.MetadataMgr;
+import simpledb.parse.Parser;
+import simpledb.parse.QueryData;
 import simpledb.tx.Transaction;
-import simpledb.metadata.*;
-import simpledb.parse.*;
 
 /**
  * A small improvement on the basic query planner.

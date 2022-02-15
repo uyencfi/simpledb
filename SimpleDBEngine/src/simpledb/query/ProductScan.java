@@ -24,7 +24,7 @@ public class ProductScan implements Scan {
     * In particular, the LHS scan is positioned at 
     * its first record, and the RHS scan
     * is positioned before its first record.
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       s1.beforeFirst();
@@ -38,7 +38,7 @@ public class ProductScan implements Scan {
     * Otherwise, it moves to the next LHS record and the
     * first RHS record.
     * If there are no more LHS records, the method returns false.
-    * @see simpledb.query.Scan#next()
+    * @see Scan#next()
     */
    public boolean next() {
       if (s2.next())
@@ -53,7 +53,7 @@ public class ProductScan implements Scan {
     * Return the integer value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getInt(java.lang.String)
+    * @see Scan#getInt(String)
     */
    public int getInt(String fldname) {
       if (s1.hasField(fldname))
@@ -66,7 +66,7 @@ public class ProductScan implements Scan {
     * Returns the string value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getString(java.lang.String)
+    * @see Scan#getString(String)
     */
    public String getString(String fldname) {
       if (s1.hasField(fldname))
@@ -79,7 +79,7 @@ public class ProductScan implements Scan {
     * Return the value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       if (s1.hasField(fldname))
@@ -91,7 +91,7 @@ public class ProductScan implements Scan {
    /**
     * Returns true if the specified field is in
     * either of the underlying scans.
-    * @see simpledb.query.Scan#hasField(java.lang.String)
+    * @see Scan#hasField(String)
     */
    public boolean hasField(String fldname) {
       return s1.hasField(fldname) || s2.hasField(fldname);
@@ -99,7 +99,7 @@ public class ProductScan implements Scan {
 
    /**
     * Close both underlying scans.
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       s1.close();

@@ -1,10 +1,17 @@
 package simpledb.plan;
 
 import java.util.Iterator;
-import simpledb.tx.Transaction;
-import simpledb.parse.*;
-import simpledb.query.*;
+
 import simpledb.metadata.MetadataMgr;
+import simpledb.parse.CreateIndexData;
+import simpledb.parse.CreateTableData;
+import simpledb.parse.CreateViewData;
+import simpledb.parse.DeleteData;
+import simpledb.parse.InsertData;
+import simpledb.parse.ModifyData;
+import simpledb.query.Constant;
+import simpledb.query.UpdateScan;
+import simpledb.tx.Transaction;
 
 /**
  * The basic planner for SQL update statements.

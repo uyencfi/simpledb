@@ -1,7 +1,10 @@
 package simpledb.parse;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * The lexical analyzer.
@@ -9,8 +12,6 @@ import java.io.*;
  */
 public class Lexer {
    private Collection<String> keywords;
-   private Collection<String> operators;
-   private Collection<String> indexes;
    private StreamTokenizer tok;
    
    /**
@@ -19,13 +20,10 @@ public class Lexer {
     */
    public Lexer(String s) {
       initKeywords();
-      initOperators(); 
-      initIndexes(); 
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
       tok.lowerCaseMode(true); //ids and keywords are converted
-      tok.wordChars('<', '>'); // allow "<", "=" and ">" in operators 
       nextToken();
    }
    
@@ -39,15 +37,6 @@ public class Lexer {
     */
    public boolean matchDelim(char d) {
       return d == (char)tok.ttype;
-   }
-   
-   /**
-    * Returns true if the current token is a legal operator.
-    * @param d a string denoting the operator.
-    * @return true if the current token is an operator.
-    */
-   public boolean matchOpr() {
-      return tok.ttype == StreamTokenizer.TT_WORD && operators.contains(tok.sval); 
    }
    
    /**
@@ -79,12 +68,8 @@ public class Lexer {
     * Returns true if the current token is a legal identifier.
     * @return true if the current token is an identifier
     */
-   public boolean matchId() { 
+   public boolean matchId() {
       return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
-   }
-   
-   public boolean matchIndex() {
-	   return  tok.ttype==StreamTokenizer.TT_WORD && indexes.contains(tok.sval);
    }
    
 //Methods to "eat" the current token
@@ -96,24 +81,9 @@ public class Lexer {
     * @param d a character denoting the delimiter
     */
    public void eatDelim(char d) {
-      if (!matchDelim(d)) {
+      if (!matchDelim(d))
          throw new BadSyntaxException();
-      }
       nextToken();
-   }
-   
-   /**
-    * Throws an exception if the current token is not an operator
-    * Otherwise, moves to the next token.
-    * @param d a string denoting the operator
-    */
-   public String eatOpr() {
-      if (!matchOpr()) {
-         throw new BadSyntaxException();
-      }
-      String opr = tok.sval;
-      nextToken();
-      return opr; 
    }
    
    /**
@@ -171,15 +141,6 @@ public class Lexer {
       return s;
    }
    
-   public String eatIndex() {
-	   if (!matchIndex()) {
-		   throw new BadSyntaxException();
-	   }
-	   String s = tok.sval; 
-	   nextToken(); 
-	   return s; 
-   }
-   
    private void nextToken() {
       try {
          tok.nextToken();
@@ -191,15 +152,7 @@ public class Lexer {
    
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
-                               "insert", "into", "values", "delete", "update", "set", "using",
+                               "insert", "into", "values", "delete", "update", "set", 
                                "create", "table", "int", "varchar", "view", "as", "index", "on");
-   }
-   
-   private void initIndexes() {
-	   indexes = Arrays.asList("btree", "hash");
-   }
-      
-   private void initOperators() {
-	   operators = Arrays.asList("=", ">", "<", ">=", "<=", "<>"); 
    }
 }

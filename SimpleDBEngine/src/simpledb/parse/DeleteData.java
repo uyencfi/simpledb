@@ -1,6 +1,6 @@
 package simpledb.parse;
 
-import simpledb.query.*;
+import simpledb.query.Predicate;
 
 /**
  * Data for the SQL <i>delete</i> statement.

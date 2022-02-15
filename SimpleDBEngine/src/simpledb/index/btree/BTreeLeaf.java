@@ -1,9 +1,10 @@
 package simpledb.index.btree;
 
 import simpledb.file.BlockId;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
 import simpledb.query.Constant;
+import simpledb.record.Layout;
+import simpledb.record.RID;
+import simpledb.tx.Transaction;
 
 /**
  * An object that holds the contents of a B-tree leaf block.

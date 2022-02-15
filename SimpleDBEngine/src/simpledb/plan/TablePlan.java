@@ -1,9 +1,12 @@
 package simpledb.plan;
 
-import simpledb.tx.Transaction;
-import simpledb.metadata.*;
+import simpledb.metadata.MetadataMgr;
+import simpledb.metadata.StatInfo;
 import simpledb.query.Scan;
-import simpledb.record.*;
+import simpledb.record.Layout;
+import simpledb.record.Schema;
+import simpledb.record.TableScan;
+import simpledb.tx.Transaction;
 
 /** The Plan class corresponding to a table.
   * @author Edward Sciore
@@ -29,7 +32,7 @@ public class TablePlan implements Plan {
    
    /**
     * Creates a table scan for this query.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       return new TableScan(tx, tblname, layout);
@@ -38,7 +41,7 @@ public class TablePlan implements Plan {
    /**
     * Estimates the number of block accesses for the table,
     * which is obtainable from the statistics manager.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */ 
    public int blocksAccessed() {
       return si.blocksAccessed();
@@ -47,7 +50,7 @@ public class TablePlan implements Plan {
    /**
     * Estimates the number of records in the table,
     * which is obtainable from the statistics manager.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return si.recordsOutput();
@@ -56,7 +59,7 @@ public class TablePlan implements Plan {
    /**
     * Estimates the number of distinct field values in the table,
     * which is obtainable from the statistics manager.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       return si.distinctValues(fldname);
@@ -65,7 +68,7 @@ public class TablePlan implements Plan {
    /**
     * Determines the schema of the table,
     * which is obtainable from the catalog manager.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return layout.schema();

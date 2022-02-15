@@ -1,6 +1,7 @@
 package simpledb.file;
 
-import java.io.*;
+import java.io.IOException;
+
 import simpledb.server.SimpleDB;
 
 public class FileTest {

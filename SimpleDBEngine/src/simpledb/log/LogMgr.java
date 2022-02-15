@@ -1,7 +1,10 @@
 package simpledb.log;
 
 import java.util.Iterator;
-import simpledb.file.*;
+
+import simpledb.file.BlockId;
+import simpledb.file.FileMgr;
+import simpledb.file.Page;
 
 /**
  * The log manager, which is responsible for 

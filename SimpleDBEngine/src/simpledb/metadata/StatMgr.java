@@ -1,8 +1,11 @@
 package simpledb.metadata;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import simpledb.record.Layout;
+import simpledb.record.TableScan;
 import simpledb.tx.Transaction;
-import simpledb.record.*;
 
 /**
  * The statistics manager is responsible for

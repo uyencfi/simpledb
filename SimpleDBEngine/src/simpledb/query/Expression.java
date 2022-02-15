@@ -1,6 +1,6 @@
 package simpledb.query;
 
-import simpledb.record.*;
+import simpledb.record.Schema;
 
 /**
  * The interface corresponding to SQL expressions.

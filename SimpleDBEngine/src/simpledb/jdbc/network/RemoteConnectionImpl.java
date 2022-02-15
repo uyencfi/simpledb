@@ -30,7 +30,7 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
    
    /**
     * Creates a new RemoteStatement for this connection.
-    * @see simpledb.jdbc.network.RemoteConnection#createStatement()
+    * @see RemoteConnection#createStatement()
     */
    public RemoteStatement createStatement() throws RemoteException {
       return new RemoteStatementImpl(this, planner);
@@ -39,7 +39,7 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
    /**
     * Closes the connection.
     * The current transaction is committed.
-    * @see simpledb.jdbc.network.RemoteConnection#close()
+    * @see RemoteConnection#close()
     */
    public void close() throws RemoteException {
       currentTx.commit();

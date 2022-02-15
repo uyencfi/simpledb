@@ -1,13 +1,19 @@
 package simpledb.opt;
 
 import java.util.Map;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
-import simpledb.query.*;
-import simpledb.metadata.*;
-import simpledb.index.planner.*;
+
+import simpledb.index.planner.IndexJoinPlan;
+import simpledb.index.planner.IndexSelectPlan;
+import simpledb.metadata.IndexInfo;
+import simpledb.metadata.MetadataMgr;
 import simpledb.multibuffer.MultibufferProductPlan;
-import simpledb.plan.*;
+import simpledb.plan.Plan;
+import simpledb.plan.SelectPlan;
+import simpledb.plan.TablePlan;
+import simpledb.query.Constant;
+import simpledb.query.Predicate;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * This class contains methods for planning a single table.

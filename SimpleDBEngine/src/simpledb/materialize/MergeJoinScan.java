@@ -1,6 +1,7 @@
 package simpledb.materialize;
 
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
 
 /**
  * The Scan class for the <i>mergejoin</i> operator.
@@ -29,7 +30,7 @@ public class MergeJoinScan implements Scan {
    
    /**
     * Close the scan by closing the two underlying scans.
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       s1.close();
@@ -40,7 +41,7 @@ public class MergeJoinScan implements Scan {
     * Position the scan before the first record,
     * by positioning each underlying scan before
     * their first records.
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       s1.beforeFirst();
@@ -58,7 +59,7 @@ public class MergeJoinScan implements Scan {
     * Otherwise, repeatedly move the scan having the smallest
     * value until a common join value is found.
     * When one of the scans runs out of records, return false.
-    * @see simpledb.query.Scan#next()
+    * @see Scan#next()
     */
    public boolean next() {
       boolean hasmore2 = s2.next();
@@ -91,7 +92,7 @@ public class MergeJoinScan implements Scan {
     * Return the integer value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getInt(java.lang.String)
+    * @see Scan#getInt(String)
     */
    public int getInt(String fldname) {
       if (s1.hasField(fldname))
@@ -104,7 +105,7 @@ public class MergeJoinScan implements Scan {
     * Return the string value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getString(java.lang.String)
+    * @see Scan#getString(String)
     */
    public String getString(String fldname) {
       if (s1.hasField(fldname))
@@ -117,7 +118,7 @@ public class MergeJoinScan implements Scan {
     * Return the value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       if (s1.hasField(fldname))
@@ -129,7 +130,7 @@ public class MergeJoinScan implements Scan {
    /**
     * Return true if the specified field is in
     * either of the underlying scans.
-    * @see simpledb.query.Scan#hasField(java.lang.String)
+    * @see Scan#hasField(String)
     */
    public boolean hasField(String fldname) {
       return s1.hasField(fldname) || s2.hasField(fldname);

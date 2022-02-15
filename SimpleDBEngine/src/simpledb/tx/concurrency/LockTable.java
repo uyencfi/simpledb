@@ -1,6 +1,8 @@
 package simpledb.tx.concurrency;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import simpledb.file.BlockId;
 
 /**

@@ -1,9 +1,11 @@
 package simpledb.jdbc.embedded;
 
-import java.sql.SQLException;
 import static java.sql.Types.INTEGER;
-import simpledb.record.Schema;
+
+import java.sql.SQLException;
+
 import simpledb.jdbc.ResultSetMetaDataAdapter;
+import simpledb.record.Schema;
 
 /**
  * The embedded implementation of ResultSetMetaData.

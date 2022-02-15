@@ -1,8 +1,9 @@
 package simpledb.log;
 
 import java.util.Iterator;
-import simpledb.server.SimpleDB;
+
 import simpledb.file.Page;
+import simpledb.server.SimpleDB;
 
 public class LogTest {
    private static LogMgr lm;

@@ -1,10 +1,13 @@
 package simpledb.index.btree;
 
 import static java.sql.Types.INTEGER;
+
 import simpledb.file.BlockId;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
 import simpledb.query.Constant;
+import simpledb.record.Layout;
+import simpledb.record.RID;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * B-tree directory and leaf pages have many commonalities:

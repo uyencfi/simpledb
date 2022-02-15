@@ -1,6 +1,7 @@
 package simpledb.tx.recovery;
 
-import simpledb.file.*;
+import simpledb.file.BlockId;
+import simpledb.file.Page;
 import simpledb.log.LogMgr;
 import simpledb.tx.Transaction;
 
@@ -43,7 +44,7 @@ public class SetIntRecord implements LogRecord {
     * The method pins a buffer to the specified block,
     * calls setInt to restore the saved value,
     * and unpins the buffer.
-    * @see simpledb.tx.recovery.LogRecord#undo(int)
+    * @see LogRecord#undo(int)
     */
    public void undo(Transaction tx) {
       tx.pin(blk);

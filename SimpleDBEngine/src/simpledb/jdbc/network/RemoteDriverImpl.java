@@ -2,6 +2,7 @@ package simpledb.jdbc.network;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
 import simpledb.server.SimpleDB;
 
 /**
@@ -19,7 +20,7 @@ public class RemoteDriverImpl extends UnicastRemoteObject implements RemoteDrive
    /**
     * Creates a new RemoteConnectionImpl object and 
     * returns it.
-    * @see simpledb.jdbc.network.RemoteDriver#connect()
+    * @see RemoteDriver#connect()
     */
    public RemoteConnection connect() throws RemoteException {
       return new RemoteConnectionImpl(db);

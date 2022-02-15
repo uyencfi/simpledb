@@ -1,9 +1,11 @@
 package simpledb.query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import simpledb.plan.Plan;
-import simpledb.record.*;
+import simpledb.record.Schema;
 
 /**
  * A predicate is a Boolean combination of terms.

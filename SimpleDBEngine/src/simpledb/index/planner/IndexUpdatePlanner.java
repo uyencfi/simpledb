@@ -1,13 +1,25 @@
 package simpledb.index.planner;
 
-import java.util.*;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
-import simpledb.metadata.*;
-import simpledb.query.*;
-import simpledb.parse.*;
-import simpledb.plan.*;
+import java.util.Iterator;
+import java.util.Map;
+
 import simpledb.index.Index;
+import simpledb.metadata.IndexInfo;
+import simpledb.metadata.MetadataMgr;
+import simpledb.parse.CreateIndexData;
+import simpledb.parse.CreateTableData;
+import simpledb.parse.CreateViewData;
+import simpledb.parse.DeleteData;
+import simpledb.parse.InsertData;
+import simpledb.parse.ModifyData;
+import simpledb.plan.Plan;
+import simpledb.plan.SelectPlan;
+import simpledb.plan.TablePlan;
+import simpledb.plan.UpdatePlanner;
+import simpledb.query.Constant;
+import simpledb.query.UpdateScan;
+import simpledb.record.RID;
+import simpledb.tx.Transaction;
 
 /**
  * A modification of the basic update planner.
@@ -115,7 +127,7 @@ public class IndexUpdatePlanner implements UpdatePlanner {
    }
    
    public int executeCreateIndex(CreateIndexData data, Transaction tx) {
-      mdm.createIndex(data.indexName(), data.tableName(), data.fieldName(), data.idxType(), tx);
+      mdm.createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
       return 0;
    }
 }

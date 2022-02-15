@@ -1,10 +1,11 @@
 package simpledb.materialize;
 
-import java.util.*;
-import simpledb.tx.Transaction;
-import simpledb.record.Schema;
+import java.util.List;
+
 import simpledb.plan.Plan;
-import simpledb.query.*;
+import simpledb.query.Scan;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * The Plan class for the <i>groupby</i> operator.
@@ -41,7 +42,7 @@ public class GroupByPlan implements Plan {
     * This method opens a sort plan for the specified plan.
     * The sort plan ensures that the underlying records
     * will be appropriately grouped.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan s = p.open();
@@ -54,7 +55,7 @@ public class GroupByPlan implements Plan {
     * which is one pass through the sorted table.
     * It does <i>not</i> include the one-time cost
     * of materializing and sorting the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return p.blocksAccessed();
@@ -64,7 +65,7 @@ public class GroupByPlan implements Plan {
     * Return the number of groups.  Assuming equal distribution,
     * this is the product of the distinct values
     * for each grouping field.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       int numgroups = 1;
@@ -80,7 +81,7 @@ public class GroupByPlan implements Plan {
     * as in the underlying query.
     * If the field is an aggregate field, then we
     * assume that all values are distinct.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       if (p.schema().hasField(fldname))
@@ -93,7 +94,7 @@ public class GroupByPlan implements Plan {
     * Returns the schema of the output table.
     * The schema consists of the group fields,
     * plus one field for each aggregation function.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return sch;

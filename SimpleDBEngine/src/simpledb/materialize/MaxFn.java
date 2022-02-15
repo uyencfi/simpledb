@@ -1,6 +1,7 @@
 package simpledb.materialize;
 
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
 
 /**
  * The <i>max</i> aggregation function.
@@ -21,7 +22,7 @@ public class MaxFn implements AggregationFn {
    /**
     * Start a new maximum to be the 
     * field value in the current record.
-    * @see simpledb.materialize.AggregationFn#processFirst(simpledb.query.Scan)
+    * @see AggregationFn#processFirst(Scan)
     */
    public void processFirst(Scan s) {
       val = s.getVal(fldname);
@@ -30,7 +31,7 @@ public class MaxFn implements AggregationFn {
    /**
     * Replace the current maximum by the field value
     * in the current record, if it is higher.
-    * @see simpledb.materialize.AggregationFn#processNext(simpledb.query.Scan)
+    * @see AggregationFn#processNext(Scan)
     */
    public void processNext(Scan s) {
       Constant newval = s.getVal(fldname);
@@ -40,7 +41,7 @@ public class MaxFn implements AggregationFn {
    
    /**
     * Return the field's name, prepended by "maxof".
-    * @see simpledb.materialize.AggregationFn#fieldName()
+    * @see AggregationFn#fieldName()
     */
    public String fieldName() {
       return "maxof" + fldname;
@@ -48,7 +49,7 @@ public class MaxFn implements AggregationFn {
    
    /**
     * Return the current maximum.
-    * @see simpledb.materialize.AggregationFn#value()
+    * @see AggregationFn#value()
     */
    public Constant value() {
       return val;

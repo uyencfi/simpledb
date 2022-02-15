@@ -1,8 +1,9 @@
 package simpledb.index.query;
 
 import simpledb.index.Index;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
 import simpledb.record.TableScan;
-import simpledb.query.*;
 
 /**
  * The scan class corresponding to the indexjoin relational
@@ -39,7 +40,7 @@ public class IndexJoinScan implements Scan {
     * That is, the LHS scan will be positioned at its
     * first record, and the index will be positioned
     * before the first record for the join value.
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       lhs.beforeFirst();
@@ -53,7 +54,7 @@ public class IndexJoinScan implements Scan {
     * Otherwise, it moves to the next LHS record and the
     * first index record.
     * If there are no more LHS records, the method returns false.
-    * @see simpledb.query.Scan#next()
+    * @see Scan#next()
     */
    public boolean next() {
       while (true) {
@@ -69,7 +70,7 @@ public class IndexJoinScan implements Scan {
    
    /**
     * Returns the integer value of the specified field.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public int getInt(String fldname) {
       if (rhs.hasField(fldname))
@@ -80,7 +81,7 @@ public class IndexJoinScan implements Scan {
    
    /**
     * Returns the Constant value of the specified field.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       if (rhs.hasField(fldname))
@@ -91,7 +92,7 @@ public class IndexJoinScan implements Scan {
    
    /**
     * Returns the string value of the specified field.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public String getString(String fldname) {
       if (rhs.hasField(fldname))
@@ -101,7 +102,7 @@ public class IndexJoinScan implements Scan {
    }
    
    /** Returns true if the field is in the schema.
-     * @see simpledb.query.Scan#hasField(java.lang.String)
+     * @see Scan#hasField(String)
      */
    public boolean hasField(String fldname) {
       return rhs.hasField(fldname) || lhs.hasField(fldname);
@@ -109,7 +110,7 @@ public class IndexJoinScan implements Scan {
    
    /**
     * Closes the scan by closing its LHS scan and its RHS index.
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       lhs.close();

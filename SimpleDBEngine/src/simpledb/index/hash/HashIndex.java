@@ -1,9 +1,11 @@
 package simpledb.index.hash;
 
-import simpledb.tx.Transaction;
-import simpledb.record.*;
 import simpledb.index.Index;
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.record.Layout;
+import simpledb.record.RID;
+import simpledb.record.TableScan;
+import simpledb.tx.Transaction;
 
 /**
  * A static hash implementation of the Index interface.
@@ -38,7 +40,7 @@ public class HashIndex implements Index {
 	 * and then opens a table scan on the file
 	 * corresponding to the bucket.
 	 * The table scan for the previous bucket (if any) is closed.
-	 * @see simpledb.index.Index#beforeFirst(simpledb.query.Constant)
+	 * @see Index#beforeFirst(Constant)
 	 */
 	public void beforeFirst(Constant searchkey) {
 		close();
@@ -53,7 +55,7 @@ public class HashIndex implements Index {
 	 * The method loops through the table scan for the bucket,
 	 * looking for a matching record, and returning false
 	 * if there are no more such records.
-	 * @see simpledb.index.Index#next()
+	 * @see Index#next()
 	 */
 	public boolean next() {
 		while (ts.next())
@@ -65,7 +67,7 @@ public class HashIndex implements Index {
 	/**
 	 * Retrieves the dataRID from the current record
 	 * in the table scan for the bucket.
-	 * @see simpledb.index.Index#getDataRid()
+	 * @see Index#getDataRid()
 	 */
 	public RID getDataRid() {
 		int blknum = ts.getInt("block");
@@ -75,7 +77,7 @@ public class HashIndex implements Index {
 
 	/**
 	 * Inserts a new record into the table scan for the bucket.
-	 * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
+	 * @see Index#insert(Constant, RID)
 	 */
 	public void insert(Constant val, RID rid) {
 		beforeFirst(val);
@@ -90,7 +92,7 @@ public class HashIndex implements Index {
 	 * the bucket.  The method starts at the beginning of the
 	 * scan, and loops through the records until the
 	 * specified record is found.
-	 * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
+	 * @see Index#delete(Constant, RID)
 	 */
 	public void delete(Constant val, RID rid) {
 		beforeFirst(val);
@@ -103,7 +105,7 @@ public class HashIndex implements Index {
 
 	/**
 	 * Closes the index by closing the current table scan.
-	 * @see simpledb.index.Index#close()
+	 * @see Index#close()
 	 */
 	public void close() {
 		if (ts != null)

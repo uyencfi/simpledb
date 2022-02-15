@@ -1,6 +1,8 @@
 package simpledb.buffer;
 
-import simpledb.file.*;
+import simpledb.file.BlockId;
+import simpledb.file.FileMgr;
+import simpledb.file.Page;
 import simpledb.log.LogMgr;
 
 /**

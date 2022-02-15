@@ -1,10 +1,12 @@
 package simpledb.multibuffer;
 
-import simpledb.tx.Transaction;
-import simpledb.record.*;
-import simpledb.query.*;
-import simpledb.materialize.*;
+import simpledb.materialize.MaterializePlan;
+import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
+import simpledb.query.Scan;
+import simpledb.query.UpdateScan;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * The Plan class for the multi-buffer version of the
@@ -39,7 +41,7 @@ public class MultibufferProductPlan implements Plan {
     * It creates a chunk plan for each chunk, saving them in a list.
     * Finally, it creates a multiscan for this list of plans,
     * and returns that scan.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan leftscan = lhs.open();
@@ -55,7 +57,7 @@ public class MultibufferProductPlan implements Plan {
     * The method uses the current number of available buffers
     * to calculate C(p2), and so this value may differ
     * when the query scan is opened.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       // this guesses at the # of chunks
@@ -70,7 +72,7 @@ public class MultibufferProductPlan implements Plan {
     * Estimates the number of output records in the product.
     * The formula is:
     * <pre> R(product(p1,p2)) = R(p1)*R(p2) </pre>
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return lhs.recordsOutput() * rhs.recordsOutput();
@@ -80,7 +82,7 @@ public class MultibufferProductPlan implements Plan {
     * Estimates the distinct number of field values in the product.
     * Since the product does not increase or decrease field values,
     * the estimate is the same as in the appropriate underlying query.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       if (lhs.schema().hasField(fldname))
@@ -92,7 +94,7 @@ public class MultibufferProductPlan implements Plan {
    /**
     * Returns the schema of the product,
     * which is the union of the schemas of the underlying queries.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return schema;

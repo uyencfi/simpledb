@@ -1,6 +1,7 @@
 package simpledb.jdbc;
 
-import java.sql.*;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
  * This class implements all of the methods of the ResultSetMetaData interface,

@@ -1,9 +1,11 @@
 package simpledb.materialize;
 
-import simpledb.tx.Transaction;
-import simpledb.record.*;
 import simpledb.plan.Plan;
-import simpledb.query.*;
+import simpledb.query.Scan;
+import simpledb.query.UpdateScan;
+import simpledb.record.Layout;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * The Plan class for the <i>materialize</i> operator.
@@ -27,7 +29,7 @@ public class MaterializePlan implements Plan {
     * This method loops through the underlying query,
     * copying its output records into a temporary table.
     * It then returns a table scan for that table.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Schema sch = srcplan.schema();
@@ -49,7 +51,7 @@ public class MaterializePlan implements Plan {
     * materialized table.
     * It does <i>not</i> include the one-time cost
     * of materializing the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       // create a dummy Layout object to calculate record length
@@ -61,7 +63,7 @@ public class MaterializePlan implements Plan {
    /**
     * Return the number of records in the materialized table,
     * which is the same as in the underlying plan.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return srcplan.recordsOutput();
@@ -70,7 +72,7 @@ public class MaterializePlan implements Plan {
    /**
     * Return the number of distinct field values,
     * which is the same as in the underlying plan.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       return srcplan.distinctValues(fldname);
@@ -79,7 +81,7 @@ public class MaterializePlan implements Plan {
    /**
     * Return the schema of the materialized table,
     * which is the same as in the underlying plan.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return srcplan.schema();

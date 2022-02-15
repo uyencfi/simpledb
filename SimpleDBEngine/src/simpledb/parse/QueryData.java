@@ -1,8 +1,9 @@
 package simpledb.parse;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
-import simpledb.query.*;
+import simpledb.query.Predicate;
 
 /**
  * Data for the SQL <i>select</i> statement.

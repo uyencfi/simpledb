@@ -1,5 +1,9 @@
 package embedded;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import simpledb.jdbc.embedded.EmbeddedDriver;
 
@@ -13,14 +17,6 @@ public class CreateStudentDB {
          String s = "create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)";
          stmt.executeUpdate(s);
          System.out.println("Table STUDENT created.");
-         
-         s = "create index idxMajor on student(majorid) using hash"; 
-         stmt.executeUpdate(s); 
-         System.out.println("index idxMajor created on student(majorid) hash");
-         
-         s = "create index idxMajor on student(sname) using btree"; 
-         stmt.executeUpdate(s); 
-         System.out.println("index idxMajor created on student(sname) btree");
 
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
          String[] studvals = {"(1, 'joe', 10, 2021)",

@@ -1,6 +1,6 @@
 package simpledb.query;
 
-import simpledb.record.*;
+import simpledb.record.RID;
 
 /**
  * The scan class corresponding to the <i>select</i> relational

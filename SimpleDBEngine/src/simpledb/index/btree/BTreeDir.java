@@ -2,8 +2,8 @@ package simpledb.index.btree;
 
 import simpledb.file.BlockId;
 import simpledb.query.Constant;
-import simpledb.tx.Transaction;
 import simpledb.record.Layout;
+import simpledb.tx.Transaction;
 
 /**
  * A B-tree directory block.

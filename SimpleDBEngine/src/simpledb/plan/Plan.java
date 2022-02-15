@@ -1,7 +1,7 @@
 package simpledb.plan;
 
 import simpledb.query.Scan;
-import simpledb.record.*;
+import simpledb.record.Schema;
 
 /**
  * The interface implemented by each query plan.

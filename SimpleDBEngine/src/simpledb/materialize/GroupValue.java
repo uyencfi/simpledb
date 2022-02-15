@@ -1,8 +1,11 @@
 package simpledb.materialize;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
 
 /**
  * An object that holds the values of the grouping fields
@@ -38,7 +41,7 @@ public class GroupValue {
    /** 
     * Two GroupValue objects are equal if they have the same values
     * for their grouping fields. 
-    * @see java.lang.Object#equals(java.lang.Object)
+    * @see Object#equals(Object)
     */
    public boolean equals(Object obj) {
       GroupValue gv = (GroupValue) obj;
@@ -54,7 +57,7 @@ public class GroupValue {
    /**
     * The hashcode of a GroupValue object is the sum of the
     * hashcodes of its field values. 
-    * @see java.lang.Object#hashCode()
+    * @see Object#hashCode()
     */
    public int hashCode() {
       int hashval = 0;

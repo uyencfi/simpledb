@@ -1,10 +1,13 @@
 package simpledb.tx;
 
-import simpledb.file.*;
+import simpledb.buffer.Buffer;
+import simpledb.buffer.BufferMgr;
+import simpledb.file.BlockId;
+import simpledb.file.FileMgr;
+import simpledb.file.Page;
 import simpledb.log.LogMgr;
-import simpledb.buffer.*;
-import simpledb.tx.recovery.*;
 import simpledb.tx.concurrency.ConcurrencyMgr;
+import simpledb.tx.recovery.RecoveryMgr;
 
 /**
  * Provide transaction management for clients,

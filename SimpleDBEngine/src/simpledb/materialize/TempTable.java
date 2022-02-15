@@ -1,8 +1,10 @@
 package simpledb.materialize;
 
+import simpledb.query.UpdateScan;
+import simpledb.record.Layout;
+import simpledb.record.Schema;
+import simpledb.record.TableScan;
 import simpledb.tx.Transaction;
-import simpledb.query.*;
-import simpledb.record.*;
 
 /**
  * A class that creates temporary tables.

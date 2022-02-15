@@ -1,10 +1,15 @@
 package simpledb.opt;
 
-import java.util.*;
-import simpledb.tx.Transaction;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import simpledb.metadata.MetadataMgr;
 import simpledb.parse.QueryData;
-import simpledb.plan.*;
+import simpledb.plan.Plan;
+import simpledb.plan.Planner;
+import simpledb.plan.ProjectPlan;
+import simpledb.plan.QueryPlanner;
+import simpledb.tx.Transaction;
 
 /**
  * A query planner that optimizes using a heuristic-based algorithm.

@@ -1,8 +1,10 @@
 package simpledb.plan;
 
 import java.util.List;
+
+import simpledb.query.ProjectScan;
+import simpledb.query.Scan;
 import simpledb.record.Schema;
-import simpledb.query.*;
 
 /** The Plan class corresponding to the <i>project</i>
  * relational algebra operator.
@@ -26,7 +28,7 @@ public class ProjectPlan implements Plan {
 
    /**
     * Creates a project scan for this query.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan s = p.open();
@@ -36,7 +38,7 @@ public class ProjectPlan implements Plan {
    /**
     * Estimates the number of block accesses in the projection,
     * which is the same as in the underlying query.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return p.blocksAccessed();
@@ -45,7 +47,7 @@ public class ProjectPlan implements Plan {
    /**
     * Estimates the number of output records in the projection,
     * which is the same as in the underlying query.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return p.recordsOutput();
@@ -55,7 +57,7 @@ public class ProjectPlan implements Plan {
     * Estimates the number of distinct field values
     * in the projection,
     * which is the same as in the underlying query.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       return p.distinctValues(fldname);
@@ -64,7 +66,7 @@ public class ProjectPlan implements Plan {
    /**
     * Returns the schema of the projection,
     * which is taken from the field list.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return schema;

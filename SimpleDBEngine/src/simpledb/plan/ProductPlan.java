@@ -27,7 +27,7 @@ public class ProductPlan implements Plan {
    
    /**
     * Creates a product scan for this query.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan s1 = p1.open();
@@ -39,7 +39,7 @@ public class ProductPlan implements Plan {
     * Estimates the number of block accesses in the product.
     * The formula is:
     * <pre> B(product(p1,p2)) = B(p1) + R(p1)*B(p2) </pre>
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return p1.blocksAccessed() + (p1.recordsOutput() * p2.blocksAccessed());
@@ -49,7 +49,7 @@ public class ProductPlan implements Plan {
     * Estimates the number of output records in the product.
     * The formula is:
     * <pre> R(product(p1,p2)) = R(p1)*R(p2) </pre>
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return p1.recordsOutput() * p2.recordsOutput();
@@ -59,7 +59,7 @@ public class ProductPlan implements Plan {
     * Estimates the distinct number of field values in the product.
     * Since the product does not increase or decrease field values,
     * the estimate is the same as in the appropriate underlying query.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       if (p1.schema().hasField(fldname))
@@ -71,7 +71,7 @@ public class ProductPlan implements Plan {
    /**
     * Returns the schema of the product,
     * which is the union of the schemas of the underlying queries.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return schema;

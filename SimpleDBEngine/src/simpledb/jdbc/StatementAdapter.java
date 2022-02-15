@@ -1,6 +1,10 @@
 package simpledb.jdbc;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 
 /**
  * This class implements all of the methods of the Statement interface,

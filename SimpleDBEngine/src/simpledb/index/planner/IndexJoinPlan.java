@@ -1,11 +1,12 @@
 package simpledb.index.planner;
 
-import simpledb.record.*;
-import simpledb.query.*;
-import simpledb.metadata.IndexInfo;
-import simpledb.plan.Plan;
 import simpledb.index.Index;
 import simpledb.index.query.IndexJoinScan;
+import simpledb.metadata.IndexInfo;
+import simpledb.plan.Plan;
+import simpledb.query.Scan;
+import simpledb.record.Schema;
+import simpledb.record.TableScan;
 
 /** The Plan class corresponding to the <i>indexjoin</i>
   * relational algebra operator.
@@ -36,7 +37,7 @@ public class IndexJoinPlan implements Plan {
    
    /**
     * Opens an indexjoin scan for this query
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan s = p1.open();
@@ -51,7 +52,7 @@ public class IndexJoinPlan implements Plan {
     * The formula is:
     * <pre> B(indexjoin(p1,p2,idx)) = B(p1) + R(p1)*B(idx)
     *       + R(indexjoin(p1,p2,idx) </pre>
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return p1.blocksAccessed() 
@@ -63,7 +64,7 @@ public class IndexJoinPlan implements Plan {
     * Estimates the number of output records in the join.
     * The formula is:
     * <pre> R(indexjoin(p1,p2,idx)) = R(p1)*R(idx) </pre>
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return p1.recordsOutput() * ii.recordsOutput();
@@ -72,7 +73,7 @@ public class IndexJoinPlan implements Plan {
    /**
     * Estimates the number of distinct values for the 
     * specified field.  
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       if (p1.schema().hasField(fldname))
@@ -83,7 +84,7 @@ public class IndexJoinPlan implements Plan {
    
    /**
     * Returns the schema of the index join.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return sch;

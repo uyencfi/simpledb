@@ -1,9 +1,10 @@
 package simpledb.jdbc.embedded;
 
-import java.util.Properties;
 import java.sql.SQLException;
-import simpledb.server.SimpleDB;
+import java.util.Properties;
+
 import simpledb.jdbc.DriverAdapter;
+import simpledb.server.SimpleDB;
 
 /**
  * The RMI server-side implementation of RemoteDriver.

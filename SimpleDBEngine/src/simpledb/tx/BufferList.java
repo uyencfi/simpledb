@@ -1,8 +1,13 @@
 package simpledb.tx;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import simpledb.buffer.Buffer;
+import simpledb.buffer.BufferMgr;
 import simpledb.file.BlockId;
-import simpledb.buffer.*;
 
 /**
  * Manage the transaction's currently-pinned buffers. 

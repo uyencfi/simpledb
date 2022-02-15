@@ -1,7 +1,10 @@
 package simpledb.record;
 
-import java.util.*;
-import static java.sql.Types.*;
+import static java.sql.Types.INTEGER;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import simpledb.file.Page;
 
 /**

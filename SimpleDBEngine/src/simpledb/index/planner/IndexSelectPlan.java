@@ -1,11 +1,13 @@
 package simpledb.index.planner;
 
-import simpledb.record.*;
-import simpledb.query.*;
-import simpledb.metadata.IndexInfo;
-import simpledb.plan.Plan;
 import simpledb.index.Index;
 import simpledb.index.query.IndexSelectScan;
+import simpledb.metadata.IndexInfo;
+import simpledb.plan.Plan;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
+import simpledb.record.Schema;
+import simpledb.record.TableScan;
 
 /** The Plan class corresponding to the <i>indexselect</i>
   * relational algebra operator.
@@ -32,7 +34,7 @@ public class IndexSelectPlan implements Plan {
    
    /** 
     * Creates a new indexselect scan for this query
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       // throws an exception if p is not a tableplan.
@@ -45,7 +47,7 @@ public class IndexSelectPlan implements Plan {
     * Estimates the number of block accesses to compute the 
     * index selection, which is the same as the 
     * index traversal cost plus the number of matching data records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return ii.blocksAccessed() + recordsOutput();
@@ -55,7 +57,7 @@ public class IndexSelectPlan implements Plan {
     * Estimates the number of output records in the index selection,
     * which is the same as the number of search key values
     * for the index.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return ii.recordsOutput();
@@ -63,7 +65,7 @@ public class IndexSelectPlan implements Plan {
    
    /** 
     * Returns the distinct values as defined by the index.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       return ii.distinctValues(fldname);
@@ -71,7 +73,7 @@ public class IndexSelectPlan implements Plan {
    
    /**
     * Returns the schema of the data table.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return p.schema(); 

@@ -1,9 +1,14 @@
 package simpledb.parse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import simpledb.query.*;
-import simpledb.record.*;
+import simpledb.query.Constant;
+import simpledb.query.Expression;
+import simpledb.query.Predicate;
+import simpledb.query.Term;
+import simpledb.record.Schema;
 
 /**
  * The SimpleDB parser.
@@ -38,9 +43,9 @@ public class Parser {
    
    public Term term() {
       Expression lhs = expression();
-      String opr = lex.eatOpr(); 
+      lex.eatDelim('=');
       Expression rhs = expression();
-      return new Term(lhs, rhs, opr); 
+      return new Term(lhs, rhs);
    }
    
    public Predicate predicate() {
@@ -240,11 +245,7 @@ public class Parser {
       lex.eatDelim('(');
       String fldname = field();
       lex.eatDelim(')');
-      lex.eatKeyword("using");
-      String idxtype = lex.eatIndex();
-//      return new CreateIndexData(idxname, tblname, fldname);
-      return new CreateIndexData(idxname, tblname, fldname, idxtype);
-      
+      return new CreateIndexData(idxname, tblname, fldname);
    }
 }
 

@@ -1,9 +1,11 @@
 package simpledb.jdbc.embedded;
 
 import java.sql.SQLException;
-import simpledb.tx.Transaction;
-import simpledb.plan.*;
+
 import simpledb.jdbc.StatementAdapter;
+import simpledb.plan.Plan;
+import simpledb.plan.Planner;
+import simpledb.tx.Transaction;
 
 /**
  * The embedded implementation of Statement.

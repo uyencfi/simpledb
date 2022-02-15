@@ -1,8 +1,10 @@
 package simpledb.multibuffer;
 
+import simpledb.query.Constant;
+import simpledb.query.ProductScan;
+import simpledb.query.Scan;
+import simpledb.record.Layout;
 import simpledb.tx.Transaction;
-import simpledb.query.*;
-import simpledb.record.*;
 
 /** 
  * The Scan class for the multi-buffer version of the
@@ -38,7 +40,7 @@ public class MultibufferProductScan implements Scan {
     * Positions the scan before the first record.
     * That is, the LHS scan is positioned at its first record,
     * and the RHS scan is positioned before the first record of the first chunk.
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       nextblknum = 0;
@@ -51,7 +53,7 @@ public class MultibufferProductScan implements Scan {
     * then move to the next LHS record and the beginning of that chunk.
     * If there are no more LHS records, then move to the next chunk
     * and begin again.
-    * @see simpledb.query.Scan#next()
+    * @see Scan#next()
     */
    public boolean next() {
       while (!prodscan.next()) 
@@ -62,7 +64,7 @@ public class MultibufferProductScan implements Scan {
    
    /**
     * Closes the current scans.
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       prodscan.close();
@@ -72,7 +74,7 @@ public class MultibufferProductScan implements Scan {
     * Returns the value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       return prodscan.getVal(fldname);
@@ -82,7 +84,7 @@ public class MultibufferProductScan implements Scan {
     * Returns the integer value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getInt(java.lang.String)
+    * @see Scan#getInt(String)
     */
    public int getInt(String fldname) {
       return prodscan.getInt(fldname);
@@ -92,7 +94,7 @@ public class MultibufferProductScan implements Scan {
     * Returns the string value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.
-    * @see simpledb.query.Scan#getString(java.lang.String)
+    * @see Scan#getString(String)
     */
    public String getString(String fldname) {
       return prodscan.getString(fldname);
@@ -101,7 +103,7 @@ public class MultibufferProductScan implements Scan {
    /**
     * Returns true if the specified field is in
     * either of the underlying scans.
-    * @see simpledb.query.Scan#hasField(java.lang.String)
+    * @see Scan#hasField(String)
     */
    public boolean hasField(String fldname) {
       return prodscan.hasField(fldname);

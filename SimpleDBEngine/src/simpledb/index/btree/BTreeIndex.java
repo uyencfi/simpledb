@@ -1,11 +1,14 @@
 package simpledb.index.btree;
 
 import static java.sql.Types.INTEGER;
+
 import simpledb.file.BlockId;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
 import simpledb.index.Index;
 import simpledb.query.Constant;
+import simpledb.record.Layout;
+import simpledb.record.RID;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * A B-tree implementation of the Index interface.
@@ -68,7 +71,7 @@ public class BTreeIndex implements Index {
     * having that search key.
     * The leaf page is kept open, for use by the methods next
     * and getDataRid.
-    * @see simpledb.index.Index#beforeFirst(simpledb.query.Constant)
+    * @see Index#beforeFirst(Constant)
     */
    public void beforeFirst(Constant searchkey) {
       close();
@@ -83,7 +86,7 @@ public class BTreeIndex implements Index {
     * Move to the next leaf record having the
     * previously-specified search key.
     * Returns false if there are no more such leaf records.
-    * @see simpledb.index.Index#next()
+    * @see Index#next()
     */
    public boolean next() {
       return leaf.next();
@@ -91,7 +94,7 @@ public class BTreeIndex implements Index {
 
    /**
     * Return the dataRID value from the current leaf record.
-    * @see simpledb.index.Index#getDataRid()
+    * @see Index#getDataRid()
     */
    public RID getDataRid() {
       return leaf.getDataRid();
@@ -106,7 +109,7 @@ public class BTreeIndex implements Index {
     * the method calls insert on the root,
     * passing it the directory entry of the new leaf page.
     * If the root node splits, then makeNewRoot is called.
-    * @see simpledb.index.Index#insert(simpledb.query.Constant, simpledb.record.RID)
+    * @see Index#insert(Constant, RID)
     */
    public void insert(Constant dataval, RID datarid) {
       beforeFirst(dataval);
@@ -126,7 +129,7 @@ public class BTreeIndex implements Index {
     * The method first traverses the directory to find
     * the leaf page containing that record; then it
     * deletes the record from the page.
-    * @see simpledb.index.Index#delete(simpledb.query.Constant, simpledb.record.RID)
+    * @see Index#delete(Constant, RID)
     */
    public void delete(Constant dataval, RID datarid) {
       beforeFirst(dataval);
@@ -137,7 +140,7 @@ public class BTreeIndex implements Index {
    /**
     * Close the index by closing its open leaf page,
     * if necessary.
-    * @see simpledb.index.Index#close()
+    * @see Index#close()
     */
    public void close() {
       if (leaf != null)

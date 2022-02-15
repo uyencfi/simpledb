@@ -1,10 +1,12 @@
 package simpledb.jdbc.embedded;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
+
+import simpledb.jdbc.ConnectionAdapter;
+import simpledb.plan.Planner;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
-import simpledb.plan.Planner;
-import simpledb.jdbc.ConnectionAdapter;
 
 /**
  * The embedded implementation of Connection.

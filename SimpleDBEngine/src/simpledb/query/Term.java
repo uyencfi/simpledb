@@ -1,7 +1,7 @@
 package simpledb.query;
 
 import simpledb.plan.Plan;
-import simpledb.record.*;
+import simpledb.record.Schema;
 
 /**
  * A term is a comparison between two expressions.
@@ -10,7 +10,6 @@ import simpledb.record.*;
  */
 public class Term {
    private Expression lhs, rhs;
-   private String opr; 
    
    /**
     * Create a new term that compares two expressions
@@ -18,10 +17,9 @@ public class Term {
     * @param lhs  the LHS expression
     * @param rhs  the RHS expression
     */
-   public Term(Expression lhs, Expression rhs, String opr) {
+   public Term(Expression lhs, Expression rhs) {
       this.lhs = lhs;
       this.rhs = rhs;
-      this.opr = opr; 
    }
    
    /**
@@ -34,87 +32,7 @@ public class Term {
    public boolean isSatisfied(Scan s) {
       Constant lhsval = lhs.evaluate(s);
       Constant rhsval = rhs.evaluate(s);
-      if (opr.equals("=")) {
-          return rhsval.equals(lhsval);
-      } else if (opr.equals(">")) {
-    	  // if opr == '>' 
-    	  return isGreater(s); 
-      } else if (opr.equals("<")) {
-    	  return isSmaller(s); 
-      } else if (opr.equals(">=")){
-    	  return isGreaterOrEqual(s); 
-      } else if (opr.equals("<=")) {
-    	  return isSmallerOrEqual(s); 
-      } else if (opr.equals("<>")) {
-    	  return isNotEqual(s); 
-      } else {
-    	  return false; 
-      }
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isSmallerOrEqual(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) <= 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isGreaterOrEqual(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) >= 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isNotEqual(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) != 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * smaller than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isSmaller(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) < 0; 
-   }
-   
-   /**
-    * Return true if the value on the left is numerically
-    * greater than that on the right. 
-    * @param s the scan
-    * @return true if the value on the left is
-    *         numerically greater than that on the right
-    */
-   public boolean isGreater(Scan s) {
-	   Constant lhsval = lhs.evaluate(s);
-	   Constant rhsval = rhs.evaluate(s);
-	   return lhsval.compareTo(rhsval) > 0; 
+      return rhsval.equals(lhsval);
    }
    
    /**
@@ -201,6 +119,6 @@ public class Term {
    }
    
    public String toString() {
-      return lhs.toString() + opr + rhs.toString();
+      return lhs.toString() + "=" + rhs.toString();
    }
 }

@@ -1,9 +1,10 @@
 package simpledb.index.query;
 
-import simpledb.record.RID;
 import simpledb.index.Index;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
+import simpledb.record.RID;
 import simpledb.record.TableScan;
-import simpledb.query.*;
 
 /**
  * The scan class corresponding to the select relational
@@ -32,7 +33,7 @@ public class IndexSelectScan implements Scan {
     * Positions the scan before the first record,
     * which in this case means positioning the index
     * before the first instance of the selection constant.
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       idx.beforeFirst(val);
@@ -45,7 +46,7 @@ public class IndexSelectScan implements Scan {
     * no more such index records.
     * If there is a next record, the method moves the 
     * tablescan to the corresponding data record.
-    * @see simpledb.query.Scan#next()
+    * @see Scan#next()
     */
    public boolean next() {
       boolean ok = idx.next();
@@ -58,7 +59,7 @@ public class IndexSelectScan implements Scan {
    
    /**
     * Returns the value of the field of the current data record.
-    * @see simpledb.query.Scan#getInt(java.lang.String)
+    * @see Scan#getInt(String)
     */
    public int getInt(String fldname) {
       return ts.getInt(fldname);
@@ -66,7 +67,7 @@ public class IndexSelectScan implements Scan {
    
    /**
     * Returns the value of the field of the current data record.
-    * @see simpledb.query.Scan#getString(java.lang.String)
+    * @see Scan#getString(String)
     */
    public String getString(String fldname) {
       return ts.getString(fldname);
@@ -74,7 +75,7 @@ public class IndexSelectScan implements Scan {
    
    /**
     * Returns the value of the field of the current data record.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       return ts.getVal(fldname);
@@ -82,7 +83,7 @@ public class IndexSelectScan implements Scan {
    
    /**
     * Returns whether the data record has the specified field.
-    * @see simpledb.query.Scan#hasField(java.lang.String)
+    * @see Scan#hasField(String)
     */
    public boolean hasField(String fldname) {
       return ts.hasField(fldname);
@@ -90,7 +91,7 @@ public class IndexSelectScan implements Scan {
    
    /**
     * Closes the scan by closing the index and the tablescan.
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       idx.close();

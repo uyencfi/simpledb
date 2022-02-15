@@ -1,6 +1,6 @@
 package simpledb.parse;
 
-import java.util.*;
+import java.util.List;
 
 import simpledb.query.Constant;
 

@@ -1,6 +1,7 @@
 package simpledb.buffer;
 
-import java.io.*;
+import java.io.IOException;
+
 import simpledb.file.BlockId;
 import simpledb.file.Page;
 import simpledb.server.SimpleDB;

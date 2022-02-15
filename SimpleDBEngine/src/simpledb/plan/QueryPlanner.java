@@ -1,7 +1,7 @@
 package simpledb.plan;
 
-import simpledb.tx.Transaction;
 import simpledb.parse.QueryData;
+import simpledb.tx.Transaction;
 
 /**
  * The interface implemented by planners for 

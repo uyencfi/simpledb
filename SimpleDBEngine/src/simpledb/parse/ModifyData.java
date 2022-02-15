@@ -1,6 +1,7 @@
 package simpledb.parse;
 
-import simpledb.query.*;
+import simpledb.query.Expression;
+import simpledb.query.Predicate;
 
 /**
  * Data for the SQL <i>update</i> statement.

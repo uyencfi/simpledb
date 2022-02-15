@@ -1,6 +1,8 @@
 package simpledb.metadata;
 
-import simpledb.record.*;
+import simpledb.record.Layout;
+import simpledb.record.Schema;
+import simpledb.record.TableScan;
 import simpledb.tx.Transaction;
 
 class ViewMgr {

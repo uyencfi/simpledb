@@ -1,10 +1,13 @@
 package simpledb.jdbc.embedded;
 
-import java.sql.*;
-import simpledb.record.Schema;
-import simpledb.query.Scan;
-import simpledb.plan.Plan;
+import java.rmi.RemoteException;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 import simpledb.jdbc.ResultSetAdapter;
+import simpledb.plan.Plan;
+import simpledb.query.Scan;
+import simpledb.record.Schema;
 
 /**
  * The embedded implementation of ResultSet.

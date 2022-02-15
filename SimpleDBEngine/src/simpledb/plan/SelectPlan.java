@@ -26,7 +26,7 @@ public class SelectPlan implements Plan {
    
    /**
     * Creates a select scan for this query.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan s = p.open();
@@ -36,7 +36,7 @@ public class SelectPlan implements Plan {
    /**
     * Estimates the number of block accesses in the selection,
     * which is the same as in the underlying query.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       return p.blocksAccessed();
@@ -46,7 +46,7 @@ public class SelectPlan implements Plan {
     * Estimates the number of output records in the selection,
     * which is determined by the 
     * reduction factor of the predicate.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return p.recordsOutput() / pred.reductionFactor(p);
@@ -60,7 +60,7 @@ public class SelectPlan implements Plan {
     * Otherwise, it will be the number of the distinct values
     * in the underlying query 
     * (but not more than the size of the output table).
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       if (pred.equatesWithConstant(fldname) != null)
@@ -78,7 +78,7 @@ public class SelectPlan implements Plan {
    /**
     * Returns the schema of the selection,
     * which is the same as in the underlying query.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return p.schema();

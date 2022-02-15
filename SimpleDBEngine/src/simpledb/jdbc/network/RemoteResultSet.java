@@ -1,6 +1,7 @@
 package simpledb.jdbc.network;
 
-import java.rmi.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * The RMI remote interface corresponding to ResultSet.

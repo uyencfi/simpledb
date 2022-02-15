@@ -1,6 +1,8 @@
 package simpledb.jdbc.network;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import simpledb.jdbc.StatementAdapter;
 
 /**

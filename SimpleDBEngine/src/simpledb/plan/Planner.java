@@ -1,7 +1,14 @@
 package simpledb.plan;
 
+import simpledb.parse.CreateIndexData;
+import simpledb.parse.CreateTableData;
+import simpledb.parse.CreateViewData;
+import simpledb.parse.DeleteData;
+import simpledb.parse.InsertData;
+import simpledb.parse.ModifyData;
+import simpledb.parse.Parser;
+import simpledb.parse.QueryData;
 import simpledb.tx.Transaction;
-import simpledb.parse.*;
 
 /**
  * The object that executes SQL statements.

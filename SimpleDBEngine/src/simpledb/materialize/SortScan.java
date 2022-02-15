@@ -1,9 +1,12 @@
 package simpledb.materialize;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-import simpledb.query.*;
-import simpledb.record.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
+import simpledb.query.UpdateScan;
+import simpledb.record.RID;
 
 /**
  * The Scan class for the <i>sort</i> operator.
@@ -41,7 +44,7 @@ public class SortScan implements Scan {
     * Internally, it moves to the first record of each underlying scan.
     * The variable currentscan is set to null, indicating that there is
     * no current scan.
-    * @see simpledb.query.Scan#beforeFirst()
+    * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       currentscan = null;
@@ -58,7 +61,7 @@ public class SortScan implements Scan {
     * First, the current scan is moved to the next record.
     * Then the lowest record of the two scans is found, and that
     * scan is chosen to be the new current scan.
-    * @see simpledb.query.Scan#next()
+    * @see Scan#next()
     */
    public boolean next() {
       if (currentscan != null) {
@@ -85,7 +88,7 @@ public class SortScan implements Scan {
    
    /**
     * Close the two underlying scans.
-    * @see simpledb.query.Scan#close()
+    * @see Scan#close()
     */
    public void close() {
       s1.close();
@@ -96,7 +99,7 @@ public class SortScan implements Scan {
    /**
     * Get the Constant value of the specified field
     * of the current scan.
-    * @see simpledb.query.Scan#getVal(java.lang.String)
+    * @see Scan#getVal(String)
     */
    public Constant getVal(String fldname) {
       return currentscan.getVal(fldname);
@@ -105,7 +108,7 @@ public class SortScan implements Scan {
    /**
     * Get the integer value of the specified field
     * of the current scan.
-    * @see simpledb.query.Scan#getInt(java.lang.String)
+    * @see Scan#getInt(String)
     */
    public int getInt(String fldname) {
       return currentscan.getInt(fldname);
@@ -114,7 +117,7 @@ public class SortScan implements Scan {
    /**
     * Get the string value of the specified field
     * of the current scan.
-    * @see simpledb.query.Scan#getString(java.lang.String)
+    * @see Scan#getString(String)
     */
    public String getString(String fldname) {
       return currentscan.getString(fldname);
@@ -122,7 +125,7 @@ public class SortScan implements Scan {
    
    /**
     * Return true if the specified field is in the current scan.
-    * @see simpledb.query.Scan#hasField(java.lang.String)
+    * @see Scan#hasField(String)
     */
    public boolean hasField(String fldname) {
       return currentscan.hasField(fldname);

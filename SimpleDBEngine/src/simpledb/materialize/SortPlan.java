@@ -1,10 +1,13 @@
 package simpledb.materialize;
 
-import java.util.*;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import simpledb.plan.Plan;
-import simpledb.query.*;
+import simpledb.query.Scan;
+import simpledb.query.UpdateScan;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * The Plan class for the <i>sort</i> operator.
@@ -33,7 +36,7 @@ public class SortPlan implements Plan {
     * This method is where most of the action is.
     * Up to 2 sorted temporary tables are created,
     * and are passed into SortScan for final merging.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
       Scan src = p.open();
@@ -50,7 +53,7 @@ public class SortPlan implements Plan {
     * materialized table.
     * It does <i>not</i> include the one-time cost
     * of materializing and sorting the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       // does not include the one-time cost of sorting
@@ -61,7 +64,7 @@ public class SortPlan implements Plan {
    /**
     * Return the number of records in the sorted table,
     * which is the same as in the underlying query.
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
       return p.recordsOutput();
@@ -71,7 +74,7 @@ public class SortPlan implements Plan {
     * Return the number of distinct field values in
     * the sorted table, which is the same as in
     * the underlying query.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
       return p.distinctValues(fldname);
@@ -80,7 +83,7 @@ public class SortPlan implements Plan {
    /**
     * Return the schema of the sorted table, which
     * is the same as in the underlying query.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return sch;

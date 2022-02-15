@@ -1,11 +1,11 @@
 package simpledb.jdbc.network;
 
-import simpledb.plan.Plan;
-import simpledb.query.*;
-import simpledb.record.Schema;
-
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import simpledb.plan.Plan;
+import simpledb.query.Scan;
+import simpledb.record.Schema;
 
 /**
  * The RMI server-side implementation of RemoteResultSet.
@@ -33,7 +33,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
    /**
     * Moves to the next record in the result set,
     * by moving to the next record in the saved scan.
-    * @see simpledb.jdbc.network.RemoteResultSet#next()
+    * @see RemoteResultSet#next()
     */
    public boolean next() throws RemoteException {
 		try {
@@ -48,7 +48,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
    /**
     * Returns the integer value of the specified field,
     * by returning the corresponding value on the saved scan.
-    * @see simpledb.jdbc.network.RemoteResultSet#getInt(java.lang.String)
+    * @see RemoteResultSet#getInt(String)
     */
    public int getInt(String fldname) throws RemoteException {
 		try {
@@ -64,7 +64,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
    /**
     * Returns the integer value of the specified field,
     * by returning the corresponding value on the saved scan.
-    * @see simpledb.jdbc.network.RemoteResultSet#getInt(java.lang.String)
+    * @see RemoteResultSet#getInt(String)
     */
    public String getString(String fldname) throws RemoteException {
 		try {
@@ -80,7 +80,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
    /**
     * Returns the result set's metadata,
     * by passing its schema into the RemoteMetaData constructor.
-    * @see simpledb.jdbc.network.RemoteResultSet#getMetaData()
+    * @see RemoteResultSet#getMetaData()
     */
    public RemoteMetaData getMetaData() throws RemoteException {
       return new RemoteMetaDataImpl(sch);
@@ -88,7 +88,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 
    /**
     * Closes the result set by closing its scan.
-    * @see simpledb.jdbc.network.RemoteResultSet#close()
+    * @see RemoteResultSet#close()
     */
    public void close() throws RemoteException {
       s.close();

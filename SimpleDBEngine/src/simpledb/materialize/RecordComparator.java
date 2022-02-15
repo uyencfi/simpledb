@@ -1,8 +1,10 @@
 package simpledb.materialize;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
 
 /**
  * A comparator for scans.

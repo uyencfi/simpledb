@@ -1,8 +1,12 @@
 package simpledb.jdbc.network;
 
-import java.rmi.registry.*;
-import java.sql.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
 import java.util.Properties;
+
 import simpledb.jdbc.DriverAdapter;
 
 /**
@@ -23,7 +27,7 @@ public class NetworkDriver extends DriverAdapter {
     * <P>
     * The current implementation of this method ignores the 
     * properties argument.
-    * @see java.sql.Driver#connect(java.lang.String, Properties)
+    * @see Driver#connect(String, Properties)
     */
    public Connection connect(String url, Properties prop) throws SQLException {
       try {

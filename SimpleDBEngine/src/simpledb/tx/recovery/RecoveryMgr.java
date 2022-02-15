@@ -1,11 +1,19 @@
 package simpledb.tx.recovery;
 
-import java.util.*;
-import simpledb.file.*;
-import simpledb.log.*;
-import simpledb.buffer.*;
+import static simpledb.tx.recovery.LogRecord.CHECKPOINT;
+import static simpledb.tx.recovery.LogRecord.COMMIT;
+import static simpledb.tx.recovery.LogRecord.ROLLBACK;
+import static simpledb.tx.recovery.LogRecord.START;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import simpledb.buffer.Buffer;
+import simpledb.buffer.BufferMgr;
+import simpledb.file.BlockId;
+import simpledb.log.LogMgr;
 import simpledb.tx.Transaction;
-import static simpledb.tx.recovery.LogRecord.*;
 
 /**
  * The recovery manager.  Each transaction has its own recovery manager.
