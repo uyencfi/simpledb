@@ -37,7 +37,7 @@ public class MergeJoinScan implements Scan {
       s2.close();
    }
    
-  /**
+   /**
     * Position the scan before the first record,
     * by positioning each underlying scan before
     * their first records.
@@ -63,15 +63,15 @@ public class MergeJoinScan implements Scan {
     */
    public boolean next() {
       boolean hasmore2 = s2.next();
-      if (hasmore2 && s2.getVal(fldname2).equals(joinval))
+      if (hasmore2 && joinval != null && s2.getVal(fldname2).equals(joinval))
          return true;
-      
+
       boolean hasmore1 = s1.next();
-      if (hasmore1 && s1.getVal(fldname1).equals(joinval)) {
+      if (hasmore1 && joinval != null && s1.getVal(fldname1).equals(joinval)) {
          s2.restorePosition();
          return true;
       }
-      
+
       while (hasmore1 && hasmore2) {
          Constant v1 = s1.getVal(fldname1);
          Constant v2 = s2.getVal(fldname2);
@@ -87,8 +87,8 @@ public class MergeJoinScan implements Scan {
       }
       return false;
    }
-   
-   /** 
+
+   /**
     * Return the integer value of the specified field.
     * The value is obtained from whichever scan
     * contains the field.

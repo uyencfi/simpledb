@@ -39,6 +39,14 @@ public class Term {
       this.opr = opr;
    }
 
+   public Expression getLhs() {
+      return lhs;
+   }
+
+   public Expression getRhs() {
+      return rhs;
+   }
+
    /**
     * Return true if both of the term's expressions
     * evaluate to the same constant,

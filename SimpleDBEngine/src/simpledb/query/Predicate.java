@@ -29,6 +29,14 @@ public class Predicate {
    }
 
    /**
+    * Get the first term
+    * // TODO Remove hardcoding
+    */
+   public Term getFirst() {
+      return terms.get(0);
+   }
+
+   /**
     * Modifies the predicate to be the conjunction of
     * itself and the specified predicate.
     * @param pred the other predicate
