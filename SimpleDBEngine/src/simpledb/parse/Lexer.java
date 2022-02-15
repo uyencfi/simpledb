@@ -13,6 +13,7 @@ import java.util.Collection;
 public class Lexer {
    private Collection<String> keywords;
    private Collection<String> indexes;
+   private Collection<String> sorts;
    private StreamTokenizer tok;
    
    /**
@@ -22,6 +23,7 @@ public class Lexer {
    public Lexer(String s) {
       initKeywords();
       initIndexes();
+      initSorts();
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
       tok.wordChars('_', '_'); //allow "_" in identifiers
@@ -80,6 +82,14 @@ public class Lexer {
     */
    public boolean matchIndex() {
       return tok.ttype==StreamTokenizer.TT_WORD && indexes.contains(tok.sval);
+   }
+
+   /**
+    * Returns true if the current token is a legal word for sorting order
+    * (either "asc" or "desc")
+    */
+   public boolean matchSorts() {
+      return tok.ttype==StreamTokenizer.TT_WORD && sorts.contains(tok.sval);
    }
 
 //Methods to "eat" the current token
@@ -206,6 +216,20 @@ public class Lexer {
       return s;
    }
 
+   /**
+    * Eats a word for the sorting order ("asc" or "desc").
+    * Throws a BadSyntaxError if the current token is neither of these values.
+    * @return the string value of the sorting order
+    */
+   public String eatSorts() {
+      if (!matchSorts()) {
+         throw new BadSyntaxException();
+      }
+      String s = tok.sval;
+      nextToken();
+      return s;
+   }
+
    private void nextToken() {
       try {
          tok.nextToken();
@@ -214,7 +238,8 @@ public class Lexer {
          throw new BadSyntaxException();
       }
    }
-   
+
+// Private methods to create special words
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", 
@@ -223,5 +248,9 @@ public class Lexer {
 
    private void initIndexes() {
       indexes = Arrays.asList("btree", "hash");
+   }
+
+   private void initSorts() {
+      sorts = Arrays.asList("desc", "asc");
    }
 }

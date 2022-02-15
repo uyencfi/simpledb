@@ -1,7 +1,6 @@
 package simpledb.materialize;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
@@ -25,7 +24,7 @@ public class SortPlan implements Plan {
     * @param sortfields the fields to sort by
     * @param tx the calling transaction
     */
-   public SortPlan(Transaction tx, Plan p, List<String> sortfields) {
+   public SortPlan(Transaction tx, Plan p, HashMap<String, String> sortfields) {
       this.tx = tx;
       this.p = p;
       sch = p.schema();

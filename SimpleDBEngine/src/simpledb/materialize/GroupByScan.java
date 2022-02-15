@@ -1,6 +1,6 @@
 package simpledb.materialize;
 
-import java.util.List;
+import java.util.*;
 
 import simpledb.query.Constant;
 import simpledb.query.Scan;

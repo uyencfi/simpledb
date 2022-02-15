@@ -1,7 +1,6 @@
 package simpledb.materialize;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
@@ -29,12 +28,16 @@ public class MergeJoinPlan implements Plan {
     */
    public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1, String fldname2) {
       this.fldname1 = fldname1;
-      List<String> sortlist1 = Arrays.asList(fldname1);
-      this.p1 = new SortPlan(tx, p1, sortlist1);
-      
+      // List<String> sortlist1 = Arrays.asList(fldname1);
+      HashMap<String, String> sortMap1 = new HashMap<>();
+      sortMap1.put(fldname1, "asc");
+      this.p1 = new SortPlan(tx, p1, sortMap1);
+
       this.fldname2 = fldname2;
-      List<String> sortlist2 = Arrays.asList(fldname2);
-      this.p2 = new SortPlan(tx, p2, sortlist2);
+      // List<String> sortlist2 = Arrays.asList(fldname2);
+      HashMap<String, String> sortMap2 = new HashMap<>();
+      sortMap2.put(fldname2, "asc");
+      this.p2 = new SortPlan(tx, p2, sortMap2);
       
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());

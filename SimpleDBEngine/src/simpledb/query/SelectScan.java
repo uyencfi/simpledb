@@ -47,7 +47,9 @@ public class SelectScan implements UpdateScan {
 	}
 
    public Constant getVal(String fldname) {
-      return s.getVal(fldname);
+      Constant val = s.getVal(fldname);
+	  System.out.println(val);
+      return val;
    }
 
 	public boolean hasField(String fldname) {

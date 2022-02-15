@@ -1,7 +1,6 @@
 package simpledb.parse;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import simpledb.query.Predicate;
 
@@ -13,14 +12,16 @@ public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
    private Predicate pred;
+   private HashMap<String, String> sorts;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, HashMap<String, String> sorts) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
+      this.sorts = sorts;
    }
    
    /**
@@ -47,7 +48,17 @@ public class QueryData {
    public Predicate pred() {
       return pred;
    }
-   
+
+   /**
+    * Returns the fields to sort by, and their order of sorting.
+    * e.g. {"sname" = "asc", "majorid" = "desc"}
+    * @return a map of sorting field name and its corresponding sort order
+    */
+   public HashMap<String, String> sorts() {
+      System.out.println(sorts);
+      return sorts;
+   }
+
    public String toString() {
       String result = "select ";
       for (String fldname : fields)

@@ -1,8 +1,6 @@
 package simpledb.parse;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import simpledb.query.Constant;
 import simpledb.query.Expression;
@@ -66,11 +64,18 @@ public class Parser {
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
+      HashMap<String, String> sorts = new HashMap<>();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
       }
-      return new QueryData(fields, tables, pred);
+      if (lex.matchKeyword("order")) {
+         lex.eatKeyword("order");
+         lex.eatKeyword("by");
+         sorts = sortList();
+         // System.out.println(sorts);
+      }
+      return new QueryData(fields, tables, pred, sorts);
    }
    
    private List<String> selectList() {
@@ -92,7 +97,23 @@ public class Parser {
       }
       return L;
    }
-   
+
+   /**
+    * Parses the list of fields to sort by.
+    * Returns a HashMap<String, String> mapping each sorting field to its sorting order
+    * e.g. {"sname" = "asc", "majorid" = "desc"}
+    */
+   private HashMap<String, String> sortList() {
+      HashMap<String, String> map = new HashMap<>();
+      map.put(lex.eatId(), lex.matchSorts() ? lex.eatSorts() : "asc");
+      if (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         map.putAll(sortList());
+      }
+      return map;
+   }
+
+
 // Methods for parsing the various update commands
    
    public Object updateCmd() {

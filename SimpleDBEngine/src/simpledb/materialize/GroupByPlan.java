@@ -1,6 +1,6 @@
 package simpledb.materialize;
 
-import java.util.List;
+import java.util.*;
 
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
@@ -29,7 +29,11 @@ public class GroupByPlan implements Plan {
     * @param tx the calling transaction
     */
    public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
-      this.p = new SortPlan(tx, p, groupfields);
+      HashMap<String, String> sortMap = new HashMap<>();
+      for (String f : groupfields) {
+         sortMap.put(f, "asc");
+      }
+      this.p = new SortPlan(tx, p, sortMap);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)

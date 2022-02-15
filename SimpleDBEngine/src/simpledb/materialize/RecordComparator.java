@@ -1,7 +1,6 @@
 package simpledb.materialize;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import simpledb.query.Constant;
 import simpledb.query.Scan;
@@ -11,14 +10,14 @@ import simpledb.query.Scan;
  * @author Edward Sciore
  */
 public class RecordComparator implements Comparator<Scan> {
-   private List<String> fields;
+   private HashMap<String, String> fields;
    
    /**
     * Create a comparator using the specified fields,
     * using the ordering implied by its iterator.
     * @param fields a list of field names
     */
-   public RecordComparator(List<String> fields) {
+   public RecordComparator(HashMap<String, String> fields) {
       this.fields = fields;
    }
    
@@ -30,15 +29,19 @@ public class RecordComparator implements Comparator<Scan> {
     * of the comparison.
     * If the two records have the same values for all
     * sort fields, then the method returns 0.
+    * Note that the comparison result takes into account the sort order.
     * @param s1 the first scan
     * @param s2 the second scan
     * @return the result of comparing each scan's current record according to the field list
     */
    public int compare(Scan s1, Scan s2) {
-      for (String fldname : fields) {
+      for (String fldname : fields.keySet()) {
          Constant val1 = s1.getVal(fldname);
          Constant val2 = s2.getVal(fldname);
          int result = val1.compareTo(val2);
+         if (fields.get(fldname).equals("desc")) {
+            result = -result;
+         }
          if (result != 0)
             return result;
       }
