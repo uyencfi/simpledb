@@ -125,7 +125,48 @@ public class Lexer {
          throw new BadSyntaxException();
       nextToken();
    }
-   
+
+   /**
+    * Eats an operator ("=", "!=", "<>", "<", ">", "<=", ">=")
+    * and moves to the next token.
+    * Throws BadSyntaxError if there is no valid operator
+    * @return a string representing the operator
+    */
+   public String eatOpr() {
+      if (matchDelim('=')) {
+         nextToken();
+         return "=";
+      } else if (matchDelim('!')) {
+         nextToken();
+         if (matchDelim('=')) {
+            nextToken();
+            return "!=";
+         } else {
+            throw new BadSyntaxException();
+         }
+      } else if (matchDelim('<')) {
+         nextToken();
+         if (matchDelim('=')) {
+            nextToken();
+            return "<=";
+         } else if (matchDelim('>')) {
+            nextToken();
+            return "<>";
+         } else {
+            return "<";
+         }
+      } else if (matchDelim('>')) {
+         nextToken();
+         if (matchDelim('=')) {
+            nextToken();
+            return ">=";
+         } else {
+            return ">";
+         }
+      }
+      throw new BadSyntaxException();
+   }
+
    /**
     * Throws an exception if the current token is not 
     * an identifier. 

@@ -27,7 +27,8 @@ public class PredParser {
 
    public void term() {
       expression();
-      lex.eatDelim('=');
+      // lex.eatDelim('=');
+      lex.eatOpr();
       expression();
    }
 

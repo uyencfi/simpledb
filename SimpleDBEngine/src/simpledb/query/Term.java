@@ -1,5 +1,6 @@
 package simpledb.query;
 
+import simpledb.parse.*;
 import simpledb.plan.Plan;
 import simpledb.record.Schema;
 
@@ -10,6 +11,7 @@ import simpledb.record.Schema;
  */
 public class Term {
    private Expression lhs, rhs;
+   private String opr;
    
    /**
     * Create a new term that compares two expressions
@@ -20,8 +22,23 @@ public class Term {
    public Term(Expression lhs, Expression rhs) {
       this.lhs = lhs;
       this.rhs = rhs;
+      this.opr = "=";
    }
-   
+
+   /**
+    * Creates a new term that compares two expressions
+    * with a custom operator (equal, non-equal, greater/less than,
+    * greater/less than or equal).
+    * @param lhs the LHS expression
+    * @param rhs the RHS expression
+    * @param opr the operator
+    */
+   public Term(Expression lhs, Expression rhs, String opr) {
+      this.lhs = lhs;
+      this.rhs = rhs;
+      this.opr = opr;
+   }
+
    /**
     * Return true if both of the term's expressions
     * evaluate to the same constant,
@@ -32,7 +49,23 @@ public class Term {
    public boolean isSatisfied(Scan s) {
       Constant lhsval = lhs.evaluate(s);
       Constant rhsval = rhs.evaluate(s);
-      return rhsval.equals(lhsval);
+      switch (opr) {
+      case "=":
+         return lhsval.equals(rhsval);
+      case "<>":
+      case "!=":
+         return !lhsval.equals(rhsval);
+      case "<":
+         return lhsval.compareTo(rhsval) < 0;
+      case ">":
+         return lhsval.compareTo(rhsval) > 0;
+      case "<=":
+         return lhsval.compareTo(rhsval) <= 0;
+      case ">=":
+         return lhsval.compareTo(rhsval) >= 0;
+      default:
+         throw new BadSyntaxException();
+      }
    }
    
    /**
@@ -119,6 +152,6 @@ public class Term {
    }
    
    public String toString() {
-      return lhs.toString() + "=" + rhs.toString();
+      return lhs.toString() + " " + opr + " " + rhs.toString();
    }
 }
