@@ -2,6 +2,7 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.AggregationFn;
 import simpledb.query.Predicate;
 
 /**
@@ -10,28 +11,41 @@ import simpledb.query.Predicate;
  */
 public class QueryData {
    private List<String> fields;
+   private List<AggregationFn> aggregateFields;
    private Collection<String> tables;
    private Predicate pred;
+   private List<String> groupByFields;
    private HashMap<String, String> sorts;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, HashMap<String, String> sorts) {
+   public QueryData(List<String> fields, List<AggregationFn> aggregateFields, Collection<String> tables,
+                    Predicate pred, List<String> groupByFields, HashMap<String, String> sorts) {
       this.fields = fields;
+      this.aggregateFields = aggregateFields;
       this.tables = tables;
       this.pred = pred;
+      this.groupByFields = groupByFields;
       this.sorts = sorts;
    }
    
    /**
-    * Returns the fields mentioned in the select clause.
+    * Returns the fields without aggregation mentioned in the select clause.
     * @return a list of field names
     */
    public List<String> fields() {
       return fields;
    }
-   
+
+   /**
+    * Returns the fields with aggregation mentioned in the select clause.
+    * @return a list of field names
+    */
+   public List<AggregationFn> aggregateFields() {
+      return aggregateFields;
+   }
+
    /**
     * Returns the tables mentioned in the from clause.
     * @return a collection of table names
@@ -50,12 +64,32 @@ public class QueryData {
    }
 
    /**
+    * Returns the fields mentioned in the GROUP BY clause.
+    * @return a list of field names
+    */
+   public List<String> groupByFields() {
+      return groupByFields;
+   }
+
+   /**
+    * Returns the field name representation of the aggregated fields
+    * e.g. sum(popuplation) -> sumofpopulation
+    */
+   public List<String> getAggregatedFieldNames() {
+      List<String> names = new ArrayList<>();
+      for (AggregationFn f : aggregateFields) {
+          names.add(f.fieldName());
+      }
+      return names;
+   }
+
+   /**
     * Returns the fields to sort by, and their order of sorting.
     * e.g. {"sname" = "asc", "majorid" = "desc"}
     * @return a map of sorting field name and its corresponding sort order
     */
    public HashMap<String, String> sorts() {
-      System.out.println(sorts);
+      // System.out.println(sorts);
       return sorts;
    }
 

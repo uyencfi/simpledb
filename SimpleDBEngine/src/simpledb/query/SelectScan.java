@@ -48,7 +48,7 @@ public class SelectScan implements UpdateScan {
 
    public Constant getVal(String fldname) {
       Constant val = s.getVal(fldname);
-	  System.out.println(val);
+	  // System.out.println(val);
       return val;
    }
 

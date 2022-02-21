@@ -2,6 +2,7 @@ package simpledb.opt;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import simpledb.materialize.*;
 import simpledb.metadata.MetadataMgr;
@@ -51,16 +52,24 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
-      
-      // Step 4.  Sort if present
+
+      // Step 4: Aggregate if present
       Plan p = currentplan;
+      if (!data.groupByFields().isEmpty() || !data.aggregateFields().isEmpty()) {
+         System.out.println("group by plan created");
+         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
+      }
+
+      // Step 5.  Sort if present
       if (!data.sorts().isEmpty()) {
          System.out.println("sort plan created");
          p = new SortPlan(tx, p, data.sorts());
       }
 
-      // Step 5. Project on the field names
-      p = new ProjectPlan(p, data.fields());
+      // Step 6. Project on the field names
+      List<String> projectNames = data.fields();
+      projectNames.addAll(data.getAggregatedFieldNames());
+      p = new ProjectPlan(p, projectNames);
       return p;
    }
    

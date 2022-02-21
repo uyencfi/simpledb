@@ -2,6 +2,12 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.AggregationFn;
+import simpledb.materialize.AvgFn;
+import simpledb.materialize.CountFn;
+import simpledb.materialize.MaxFn;
+import simpledb.materialize.MinFn;
+import simpledb.materialize.SumFn;
 import simpledb.query.Constant;
 import simpledb.query.Expression;
 import simpledb.query.Predicate;
@@ -60,7 +66,10 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
-      List<String> fields = selectList();
+      List<String> fields = new ArrayList<>();
+      List<AggregationFn> aggregateFields = new ArrayList<>();
+      selectList(fields, aggregateFields);
+
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
@@ -69,23 +78,79 @@ public class Parser {
          lex.eatKeyword("where");
          pred = predicate();
       }
+      List<String> groupBy = new ArrayList<>();
+      if (lex.matchKeyword("group")) {
+         lex.eatKeyword("group");
+         lex.eatKeyword("by");
+         groupBy = groupByList();
+         this.checkSelectInGroupBy(fields, groupBy);
+         // System.out.println(groupBy);
+      }
       if (lex.matchKeyword("order")) {
          lex.eatKeyword("order");
          lex.eatKeyword("by");
          sorts = sortList();
          // System.out.println(sorts);
       }
-      return new QueryData(fields, tables, pred, sorts);
+      return new QueryData(fields, aggregateFields, tables, pred, groupBy, sorts);
    }
-   
-   private List<String> selectList() {
-      List<String> L = new ArrayList<String>();
+
+   private void selectList(List<String> fields, List<AggregationFn> aggregateFields) {
+      if (lex.matchKeyword("sum")) {
+         lex.eatKeyword("sum");
+         lex.eatDelim('(');
+         aggregateFields.add(new SumFn(field()));
+         lex.eatDelim(')');
+      } else if (lex.matchKeyword("count")) {
+         lex.eatKeyword("count");
+         lex.eatDelim('(');
+         aggregateFields.add(new CountFn(field()));
+         lex.eatDelim(')');
+      } else if (lex.matchKeyword("avg")) {
+         lex.eatKeyword("avg");
+         lex.eatDelim('(');
+         aggregateFields.add(new AvgFn(field()));
+         lex.eatDelim(')');
+      } else if (lex.matchKeyword("min")) {
+         lex.eatKeyword("min");
+         lex.eatDelim('(');
+         aggregateFields.add(new MinFn(field()));
+         lex.eatDelim(')');
+      } else if (lex.matchKeyword("max")) {
+         lex.eatKeyword("max");
+         lex.eatDelim('(');
+         aggregateFields.add(new MaxFn(field()));
+         lex.eatDelim(')');
+      } else {
+         fields.add(field());
+      }
+      if (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         selectList(fields, aggregateFields);
+      }
+   }
+
+   private List<String> groupByList() {
+      List<String> L = new ArrayList<>();
       L.add(field());
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
-         L.addAll(selectList());
+         L.addAll(groupByList());
       }
       return L;
+   }
+
+   /**
+    * Can only select fields that also appear in GROUP BY clause.
+    * Assuming non-empty Group by, throws BadSyntaxException
+    * if a select field does not exist in Group by.
+    */
+   private void checkSelectInGroupBy(List<String> selectFields, List<String> groupByFields) {
+      for (String f : selectFields) {
+         if (!groupByFields.contains(f)) {
+            throw new BadSyntaxException();
+         }
+      }
    }
    
    private Collection<String> tableList() {
@@ -104,7 +169,7 @@ public class Parser {
     * e.g. {"sname" = "asc", "majorid" = "desc"}
     */
    private HashMap<String, String> sortList() {
-      HashMap<String, String> map = new HashMap<>();
+      HashMap<String, String> map = new LinkedHashMap<>();
       map.put(lex.eatId(), lex.matchSorts() ? lex.eatSorts() : "asc");
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
