@@ -76,6 +76,7 @@ public class SimpleIJ {
          }
       }
       catch (SQLException e) {
+         e.printStackTrace();
          System.out.println("SQL Exception: " + e.getMessage());
       }
    }
