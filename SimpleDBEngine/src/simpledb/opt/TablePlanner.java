@@ -8,6 +8,7 @@ import simpledb.materialize.*;
 import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.multibuffer.MultibufferProductPlan;
+import simpledb.plan.BnlJoinPlan;
 import simpledb.plan.Plan;
 import simpledb.plan.SelectPlan;
 import simpledb.plan.TablePlan;
@@ -70,16 +71,18 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = makeIndexJoin(current, currsch);
+      // Plan prod = makeProductJoin(current, currsch);
+      // Plan hash = makeHashJoin(...);
+      Plan p = makeBlockNestedLoopJoin(current, currsch);
+      Plan sortMerge = makeMergeJoin(current, currsch);
+      Plan index = makeIndexJoin(current, currsch);
+
       // compare recordsOutput()
-      if (p == null) {
-         Plan prod = makeProductJoin(current, currsch);
-         Plan sortMerge = makeMergeJoin(current, currsch);
-         if (prod.recordsOutput() > sortMerge.recordsOutput()) {
-            p = sortMerge;
-         } else {
-            p = prod;
-         }
+      if (p.recordsOutput() > sortMerge.recordsOutput()) {
+         p = sortMerge;
+      }
+      if (index != null && p.recordsOutput() > index.recordsOutput()) {
+         p = index;
       }
       return p;
    }
@@ -94,6 +97,11 @@ class TablePlanner {
    public Plan makeProductPlan(Plan current) {
       Plan p = addSelectPred(myplan);
       return new MultibufferProductPlan(tx, current, p);
+   }
+
+   public Plan makeBlockNestedLoopJoin(Plan current, Schema currsch) {
+      Predicate subPred = mypred.joinSubPred(currsch, myschema);
+      return new BnlJoinPlan(tx, current, myplan, subPred);
    }
    
    private Plan makeIndexSelect() {
@@ -130,9 +138,10 @@ class TablePlanner {
       // process pred here
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
-      System.out.println(Arrays.toString(fields));
+      // System.out.println(Arrays.toString(fields));
       Plan p = new MergeJoinPlan(tx, current, myplan, fields[0], fields[1]);
-      return addJoinPred(p, currsch);
+      return p;
+      // return addJoinPred(p, currsch);
    }
 
    private String[] getFields(Predicate subPred, Schema currSchema) {
