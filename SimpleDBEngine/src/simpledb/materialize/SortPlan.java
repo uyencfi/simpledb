@@ -3,6 +3,7 @@ package simpledb.materialize;
 import java.util.*;
 
 import simpledb.plan.Plan;
+import simpledb.query.Constant;
 import simpledb.query.Scan;
 import simpledb.query.UpdateScan;
 import simpledb.record.Schema;
@@ -154,20 +155,27 @@ public class SortPlan implements Plan {
    }
    
    private boolean copy(Scan src, UpdateScan dest) {
-	  Scan store = src;  
+	  HashMap<String, Constant> store = new HashMap<>();
       dest.insert();
-      for (String fldname : sch.fields())
+      
+      for (String fldname : sch.fields()) {
          dest.setVal(fldname, src.getVal(fldname));
+      	 store.put(fldname, src.getVal(fldname));
+      }
+      
       boolean next = src.next();
       
       if (isDistinct) {
 	      while (next) {
-	    	 System.out.println("check "); 
-	    	 if (comp.compare(store, src) != 0) {
-	    		 break;
-	    	 }
+	    	 System.out.println("check " + src.getVal("majorid")); 
+	    	 for (String fldname : sch.fields()) {
+	             if (store.get(fldname) != src.getVal(fldname)) {
+	            	 return next;
+	             };
+	          }
 	    	 next = src.next();
 	      }
+	      System.out.println("end "); 
       }
       
       return next;

@@ -38,7 +38,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
-         TablePlanner tp = new TablePlanner(tblname, data.pred(), data.getIsDistinct(), tx, mdm);
+         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm);
          tableplanners.add(tp);
       }
       
@@ -61,26 +61,24 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
       }
 
-      // Step 5.  Sort if present
-      if (!data.sorts().isEmpty()) {
-         System.out.println("sort plan created");
-         p = new SortPlan(tx, p, data.sorts(), false);
-      }
-
-      // Step 6. Project on the field names
+      // Step 5. Project on the field names
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
       
+      HashMap<String, String> sortMap = new HashMap<>(); 
+      if (!data.sorts().isEmpty()) {
+//          System.out.println("sort plan created");
+//          p = new SortPlan(tx, p, data.sorts(), false);
+    	  sortMap = data.sorts();
+       } else {
+    	   for (String field : p.schema().fields()) {
+     		  sortMap.put(field, "asc"); 
+     	  }
+       }
       
-      // Step 7. remove duplicates if distinct specified 
-      if (data.getIsDistinct()) {
-    	  HashMap<String, String> sortMap = new HashMap<>(); 
-    	  for (String field : p.schema().fields()) {
-    		  sortMap.put(field, "asc"); 
-    	  }
-    	  p = new SortPlan(tx, p, sortMap, true); 
-      }
+      // Step 6. remove duplicates if distinct specified 
+      p = new SortPlan(tx, p, sortMap, data.getIsDistinct()); 
       
       return p;
    }

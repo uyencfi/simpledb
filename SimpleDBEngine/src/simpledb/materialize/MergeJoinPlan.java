@@ -31,13 +31,13 @@ public class MergeJoinPlan implements Plan {
       // List<String> sortlist1 = Arrays.asList(fldname1);
       HashMap<String, String> sortMap1 = new HashMap<>();
       sortMap1.put(fldname1, "asc");
-      this.p1 = new SortPlan(tx, p1, sortMap1);
+      this.p1 = new SortPlan(tx, p1, sortMap1, false);
 
       this.fldname2 = fldname2;
       // List<String> sortlist2 = Arrays.asList(fldname2);
       HashMap<String, String> sortMap2 = new HashMap<>();
       sortMap2.put(fldname2, "asc");
-      this.p2 = new SortPlan(tx, p2, sortMap2);
+      this.p2 = new SortPlan(tx, p2, sortMap2, false);
       
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());
