@@ -66,6 +66,10 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
       
+      if (data.sorts().isEmpty() && !data.getIsDistinct()) {
+    	  return p; 
+      }
+      
       HashMap<String, String> sortMap = new HashMap<>(); 
       if (!data.sorts().isEmpty()) {
 //          System.out.println("sort plan created");
@@ -76,6 +80,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
      		  sortMap.put(field, "asc"); 
      	  }
        }
+      
       
       // Step 6. remove duplicates if distinct specified 
       p = new SortPlan(tx, p, sortMap, data.getIsDistinct()); 
