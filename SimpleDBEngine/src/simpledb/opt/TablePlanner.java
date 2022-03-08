@@ -8,6 +8,7 @@ import simpledb.materialize.*;
 import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.multibuffer.MultibufferProductPlan;
+import simpledb.plan.HashJoinPlan;
 import simpledb.plan.Plan;
 import simpledb.plan.SelectPlan;
 import simpledb.plan.TablePlan;
@@ -58,9 +59,8 @@ class TablePlanner {
    
    /**
     * Constructs a join plan of the specified plan
-    * and the table.  The plan will use an indexjoin, if possible.
-    * (Which means that if an indexselect is also possible,
-    * the indexjoin operator takes precedence.)
+    * and the table.  The plan will choose among an indexjoin (if possible)
+    * a sortmerge join, and a product (block nested loop) join.
     * The method returns null if no join is possible.
     * @param current the specified plan
     * @return a join plan of the plan and this table
@@ -71,16 +71,27 @@ class TablePlanner {
       if (joinpred == null)
          return null;
       Plan p = makeIndexJoin(current, currsch);
-      // compare recordsOutput()
-      if (p == null) {
-         Plan prod = makeProductJoin(current, currsch);
-         Plan sortMerge = makeMergeJoin(current, currsch);
-         if (prod.recordsOutput() > sortMerge.recordsOutput()) {
-            p = sortMerge;
-         } else {
-            p = prod;
-         }
-      }
+      // Plan product = makeProductJoin(current, currsch);
+      Plan sortMerge = makeMergeJoin(current, currsch);
+      Plan hash = makeHashJoin(current, currsch);
+
+      // if (p != null) System.out.println("index: " + p.recordsOutput());
+      // System.out.println("prod: " + product.recordsOutput());
+      System.out.println("sort-merge: " + sortMerge.recordsOutput());
+      System.out.println("hash join: " + hash.recordsOutput());
+
+      // if (p == null || p.recordsOutput() > product.recordsOutput()) {
+      //    p = product;
+      // }
+      // if (p.recordsOutput() > sortMerge.recordsOutput()) {
+      //    System.out.println("choose sort-merge join");
+      //    p = sortMerge;
+      // }
+      // if (p.recordsOutput() > hash.recordsOutput()) {
+      //    System.out.println("choose hash join");
+      //    p = hash;
+      // }
+      p = hash;
       return p;
    }
 
@@ -127,21 +138,34 @@ class TablePlanner {
    }
 
    private Plan makeMergeJoin(Plan current, Schema currsch) {
-      // process pred here
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
-      System.out.println(Arrays.toString(fields));
+      // System.out.println(Arrays.toString(fields));
       Plan p = new MergeJoinPlan(tx, current, myplan, fields[0], fields[1]);
       return addJoinPred(p, currsch);
    }
 
+   // for extracting the correct field name in the join predicate;
+   // used in makeMergeJoin() and makeHashJoin()
    private String[] getFields(Predicate subPred, Schema currSchema) {
       Term t = subPred.getFirst();
-      // TODO check for order of fields (might mismatch field1, field2)
       if (t.getLhs().appliesTo(currSchema)) {
          return new String[] {t.getLhs().asFieldName(), t.getRhs().asFieldName()};
       }
       return new String[] {t.getRhs().asFieldName(), t.getLhs().asFieldName()};
+   }
+
+   private Plan makeHashJoin(Plan current, Schema currsch) {
+      Predicate subPred = mypred.joinSubPred(currsch, myschema);
+      String[] fields = getFields(subPred, currsch);
+      // System.out.println(Arrays.toString(fields));
+      Plan p = new HashJoinPlan(
+              tx,
+              current, addSelectPred(myplan),
+              fields[0], fields[1]
+      );
+      return p;
+      // return addJoinPred(p, currsch);
    }
 
 

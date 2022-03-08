@@ -63,7 +63,7 @@ public class MultibufferProductPlan implements Plan {
       // this guesses at the # of chunks
       int avail = tx.availableBuffs();
       int size = new MaterializePlan(tx, rhs).blocksAccessed();
-      int numchunks = size / avail;
+      int numchunks = Math.max(1, size / avail);
       return rhs.blocksAccessed() +
             (lhs.blocksAccessed() * numchunks);
    }
