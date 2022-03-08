@@ -67,24 +67,24 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
-      
+
+      // If no need to sort or get distinct, just return p.
       if (data.sorts().isEmpty() && !data.getIsDistinct()) {
-    	  return p; 
+         return p;
       }
-      
+
+      // Else, add a SortPlan node
       HashMap<String, String> sortMap = new HashMap<>(); 
       if (!data.sorts().isEmpty()) {
-//          System.out.println("sort plan created");
-//          p = new SortPlan(tx, p, data.sorts(), false);
-    	  sortMap = data.sorts();
-       } else {
-    	   for (String field : p.schema().fields()) {
-     		  sortMap.put(field, "asc"); 
-     	  }
-       }
+//         System.out.println("sort plan created");
+    	 sortMap = data.sorts();
+      } else {
+    	 for (String field : p.schema().fields()) {
+     		sortMap.put(field, "asc");
+    	 }
+      }
       
-      
-      // Step 6. remove duplicates if distinct specified 
+      // Step 6. Order by and remove duplicates if distinct specified
       p = new SortPlan(tx, p, sortMap, data.getIsDistinct()); 
       
       return p;
