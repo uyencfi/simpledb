@@ -17,6 +17,7 @@ public class SortPlan implements Plan {
    private Plan p;
    private Schema sch;
    private RecordComparator comp;
+   private boolean isDistinct; 
    
    /**
     * Create a sort plan for the specified query.
@@ -24,9 +25,10 @@ public class SortPlan implements Plan {
     * @param sortfields the fields to sort by
     * @param tx the calling transaction
     */
-   public SortPlan(Transaction tx, Plan p, HashMap<String, String> sortfields) {
+   public SortPlan(Transaction tx, Plan p, HashMap<String, String> sortfields, boolean isDistinct) {
       this.tx = tx;
       this.p = p;
+      this.isDistinct = isDistinct; 
       sch = p.schema();
       comp = new RecordComparator(sortfields);
    }
@@ -128,11 +130,16 @@ public class SortPlan implements Plan {
       
       boolean hasmore1 = src1.next();
       boolean hasmore2 = src2.next();
-      while (hasmore1 && hasmore2)
-         if (comp.compare(src1, src2) < 0)
-         hasmore1 = copy(src1, dest);
-      else
-         hasmore2 = copy(src2, dest);
+      
+      while (hasmore1 && hasmore2) {
+    	 int compareResult = comp.compare(src1,  src2);
+	     if (compareResult < 0)
+	        hasmore1 = copy(src1, dest);
+	     else if (compareResult == 0 && isDistinct)
+	    	hasmore1 = src1.next();
+	     else
+	        hasmore2 = copy(src2, dest);
+      }
       
       if (hasmore1)
          while (hasmore1)
@@ -147,9 +154,22 @@ public class SortPlan implements Plan {
    }
    
    private boolean copy(Scan src, UpdateScan dest) {
+	  Scan store = src;  
       dest.insert();
       for (String fldname : sch.fields())
          dest.setVal(fldname, src.getVal(fldname));
-      return src.next();
+      boolean next = src.next();
+      
+      if (isDistinct) {
+	      while (next) {
+	    	 System.out.println("check "); 
+	    	 if (comp.compare(store, src) != 0) {
+	    		 break;
+	    	 }
+	    	 next = src.next();
+	      }
+      }
+      
+      return next;
    }
 }

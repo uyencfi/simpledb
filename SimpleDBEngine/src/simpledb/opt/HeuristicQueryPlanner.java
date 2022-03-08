@@ -2,6 +2,7 @@ package simpledb.opt;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import simpledb.materialize.*;
@@ -37,7 +38,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
-         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm);
+         TablePlanner tp = new TablePlanner(tblname, data.pred(), data.getIsDistinct(), tx, mdm);
          tableplanners.add(tp);
       }
       
@@ -63,13 +64,24 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 5.  Sort if present
       if (!data.sorts().isEmpty()) {
          System.out.println("sort plan created");
-         p = new SortPlan(tx, p, data.sorts());
+         p = new SortPlan(tx, p, data.sorts(), false);
       }
 
       // Step 6. Project on the field names
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
+      
+      
+      // Step 7. remove duplicates if distinct specified 
+      if (data.getIsDistinct()) {
+    	  HashMap<String, String> sortMap = new HashMap<>(); 
+    	  for (String field : p.schema().fields()) {
+    		  sortMap.put(field, "asc"); 
+    	  }
+    	  p = new SortPlan(tx, p, sortMap, true); 
+      }
+      
       return p;
    }
    
