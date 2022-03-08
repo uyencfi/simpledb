@@ -42,6 +42,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          tableplanners.add(tp);
       }
       
+      System.out.println("select " + data.pred().toString()); 
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
       
@@ -53,6 +54,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
+      
 
       // Step 4: Aggregate if present
       Plan p = currentplan;
