@@ -21,9 +21,10 @@ public class MultibufferProductScan implements Scan {
    
    /**
     * Creates the scan class for the product of the LHS scan and a table.
-    * @param lhsscan the LHS scan
-    * @param layout the metadata for the RHS table
     * @param tx the current transaction
+    * @param lhsscan the LHS scan
+    * @param tblname the name of the RHS table
+    * @param layout the metadata for the RHS table
     */
    public MultibufferProductScan(Transaction tx, Scan lhsscan, String tblname, Layout layout) {
       this.tx = tx;
