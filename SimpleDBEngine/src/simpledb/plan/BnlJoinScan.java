@@ -63,8 +63,8 @@ public class BnlJoinScan implements Scan {
     public boolean next() {
         while (!selectFromChunkScan.next()) {
             if (!useNextChunk()) {
-                System.out.println("BNL output " + COUNT + " records");
-                System.out.println("end of LHS");
+                // System.out.println("BNL output " + COUNT + " records");
+                // System.out.println("end of LHS");
                 return false;
             }
         }

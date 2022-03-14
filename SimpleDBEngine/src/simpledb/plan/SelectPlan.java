@@ -1,5 +1,6 @@
 package simpledb.plan;
 
+import simpledb.index.planner.IndexSelectPlan;
 import simpledb.query.Predicate;
 import simpledb.query.Scan;
 import simpledb.query.SelectScan;
@@ -85,6 +86,15 @@ public class SelectPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(select %s on %s)", tblname, pred);
+      return String.format("(select %s on %s)", tblname, pred);
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+      String s = String.format("Select on %s (pred: %s)", tblname, pred);
+      if (p instanceof IndexSelectPlan) {
+         s += String.format("\n  -> %s", p.getQueryPlan(tblname, "dummy", -1));
+      }
+      return s;
    }
 }

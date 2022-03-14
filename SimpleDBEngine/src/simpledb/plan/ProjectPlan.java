@@ -73,6 +73,17 @@ public class ProjectPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("%s \n project on (%s)", currQueryPlan, String.join(", ", schema.fields())); 
+      return String.format("%s \n project on (%s)", currQueryPlan, String.join(", ", schema.fields()));
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+      String padding = " ".repeat(margin);
+      return String.format(
+              "Project\n" +
+              "  fields: %s\n" +
+              "  -> %s",
+              schema.fields(), currQueryPlan.replaceAll("\n", "\n" + padding)
+      );
    }
 }

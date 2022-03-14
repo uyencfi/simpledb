@@ -76,8 +76,20 @@ public class ProductPlan implements Plan {
    public Schema schema() {
       return schema;
    }
-   
+
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(%s cross product with %s)", currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan)); 
+      return String.format("(%s cross product with %s)", currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan));
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+      String padding = " ".repeat(margin);
+      return String.format(
+              "Cross product\n" +
+              "  -> %s\n" +
+              "  -> %s\n",
+              currQueryPlan.replaceAll("\n", "\n" + padding),
+              p2.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding)
+      );
    }
 }

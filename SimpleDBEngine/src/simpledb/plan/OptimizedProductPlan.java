@@ -38,8 +38,12 @@ public class OptimizedProductPlan implements Plan {
    public Schema schema() {
       return bestplan.schema();
    }
-   
+
    public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return "";
+   }
+
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
 	   return "";
    }
 }

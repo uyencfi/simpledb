@@ -169,13 +169,15 @@ public class SortPlan implements Plan {
       
       if (isDistinct) {
 	      while (next) {
+	    	 // System.out.println("check " + src.getVal("majorid"));
 	    	 for (String fldname : sch.fields()) {
 	             if (store.get(fldname) != src.getVal(fldname)) {
 	            	 return next;
-	             };
+	             }
 	          }
 	    	 next = src.next();
 	      }
+	      // System.out.println("end ");
       }
       
       return next;
@@ -188,5 +190,20 @@ public class SortPlan implements Plan {
 	   }
 	   sortBy = sortBy.substring(0, sortBy.length() - 1);
 	   return String.format("%s \n %s%s", currQueryPlan, isDistinct ? "get distinct and " : "", sortBy);
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+       String padding = " ".repeat(margin);
+       StringBuilder sortBy = (isDistinct)
+               ? new StringBuilder("Get distinct and Sort by")
+               : new StringBuilder("Sort by");
+       for (Map.Entry<String, String> element: sortfields.entrySet()) {
+           sortBy.append(String.format(" %s %s,", element.getKey(), element.getValue()));
+       }
+       return String.format(
+               "%s\n" +
+               "  -> %s",
+               sortBy.substring(0, sortBy.length() - 1), currQueryPlan.replaceAll("\n", "\n" + padding));
    }
 }
