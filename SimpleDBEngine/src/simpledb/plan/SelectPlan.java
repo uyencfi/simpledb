@@ -85,6 +85,6 @@ public class SelectPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(scan on %s)", tblname);
+	   return String.format("(select %s on %s)", tblname, pred);
    }
 }

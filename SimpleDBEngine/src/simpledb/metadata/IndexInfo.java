@@ -121,4 +121,8 @@ public class IndexInfo {
       }
       return new Layout(sch);
    }
+   
+   public String getField() {
+	   return this.fldname; 
+   }
 }

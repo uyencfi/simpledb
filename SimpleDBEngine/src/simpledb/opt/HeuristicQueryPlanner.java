@@ -59,7 +59,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4: Aggregate if present
       Plan p = currentplan;
       if (!data.groupByFields().isEmpty() || !data.aggregateFields().isEmpty()) {
-         System.out.println("group by plan created");
+//         System.out.println("group by plan created");
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
          this.queryPlan = p.getQueryPlan("", this.queryPlan);
       }
@@ -70,9 +70,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       p = new ProjectPlan(p, projectNames);
       this.queryPlan = p.getQueryPlan("", this.queryPlan);
       
-      System.out.println(this.queryPlan);
       // If no need to sort or get distinct, just return p.
       if (data.sorts().isEmpty() && !data.getIsDistinct()) {
+         System.out.println(this.queryPlan + "\n");
          return p;
       }
 
@@ -86,10 +86,12 @@ public class HeuristicQueryPlanner implements QueryPlanner {
      		sortMap.put(field, "asc");
     	 }
       }
-      
       // Step 6. Order by and remove duplicates if distinct specified
       p = new SortPlan(tx, p, sortMap, data.getIsDistinct()); 
+      this.queryPlan = p.getQueryPlan("", this.queryPlan); 
       
+      System.out.println(this.queryPlan + "\n");
+
       return p;
    }
    

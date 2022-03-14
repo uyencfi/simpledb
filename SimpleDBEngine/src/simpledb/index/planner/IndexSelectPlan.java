@@ -80,6 +80,6 @@ public class IndexSelectPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(index scan on %s)", tblname); 
+	   return String.format("(index select %s on %s=%s)", tblname, ii.getField(), val); 
    }
 }

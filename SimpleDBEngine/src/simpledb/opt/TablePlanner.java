@@ -74,7 +74,7 @@ class TablePlanner {
       if (joinpred == null)
          return null;
 
-      System.out.println("Has Non-equality pred: " + joinpred.hasNonEqualityPredicate());
+//      System.out.println("Has Non-equality pred: " + joinpred.hasNonEqualityPredicate());
       if (joinpred.hasNonEqualityPredicate()) {
          return makeBlockNestedLoopJoin(current, currsch);
       }
@@ -86,10 +86,10 @@ class TablePlanner {
       Plan sortMerge = makeMergeJoin(current, currsch);
       Plan hash = makeHashJoin(current, currsch);
 
-      System.out.println("Bnl: " + p.recordsOutput());
-      if (index != null) System.out.println("index: " + p.recordsOutput());
-      System.out.println("sort-merge: " + sortMerge.recordsOutput());
-      System.out.println("hash join: " + hash.recordsOutput());
+//      System.out.println("Bnl: " + p.recordsOutput());
+//      if (index != null) System.out.println("index: " + p.recordsOutput());
+//      System.out.println("sort-merge: " + sortMerge.recordsOutput());
+//      System.out.println("hash join: " + hash.recordsOutput());
 
       if (index != null && p.recordsOutput() > index.recordsOutput()) {
          p = index;
@@ -100,8 +100,8 @@ class TablePlanner {
       if (p.recordsOutput() > sortMerge.recordsOutput()) {
          p = sortMerge;
       }
-      // p = hash;
-      return p;
+      return index;
+//      return p;
    }
 
    
