@@ -91,8 +91,22 @@ public class IndexJoinPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   System.out.println(currQueryPlan);
-	   return String.format("(%s \n\t index join %s)(on index %s)", 
-			   currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan), joinfield); 
+      System.out.println(currQueryPlan);
+      return String.format("(%s \n\t index join %s)(on index %s)",
+              currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan), joinfield);
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+       String padding = " ".repeat(margin);
+       return String.format(
+               "Index join\n" +
+               "  idx: %s.%s\n" +
+               "  -> %s\n" +
+               "  -> %s",
+               tblname, ii.getField(),
+               currQueryPlan.replaceAll("\n", "\n" + padding),
+               p2.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding)
+       );
    }
 }

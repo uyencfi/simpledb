@@ -24,7 +24,6 @@ public class IndexSelectPlan implements Plan {
     * @param p the input table
     * @param ii information about the index
     * @param val the selection constant
-    * @param tx the calling transaction 
     */
    public IndexSelectPlan(Plan p, IndexInfo ii, Constant val) {
       this.p = p;
@@ -80,6 +79,11 @@ public class IndexSelectPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(index select %s on %s=%s)", tblname, ii.getField(), val); 
+      return String.format("(index select %s on %s=%s)", tblname, ii.getField(), val);
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+       return String.format("Index scan on %s (using %s: %s = %s)", tblname, ii.getIndexType(), ii.getField(), val);
    }
 }

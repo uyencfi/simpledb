@@ -81,7 +81,19 @@ public class BnlJoinPlan implements Plan {
     }
     
     public String getQueryPlan(String tblname, String currQueryPlan) {
- 	   return String.format("(%s \n\t block nested loop join %s)(%s)", 
- 			   currQueryPlan, rhs.getQueryPlan(tblname, currQueryPlan), this.joinPred); 
+        return String.format("(%s \n\t block nested loop join %s)(%s)",
+                currQueryPlan, rhs.getQueryPlan(tblname, currQueryPlan), this.joinPred);
+    }
+
+    @Override
+    public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+        String padding = " ".repeat(margin);
+        return String.format(
+                "Bnl join\n" +
+                "  cond: %s\n" +
+                "  -> %s\n" +
+                "  -> %s",
+                joinPred, currQueryPlan.replaceAll("\n", "\n" + padding),
+                rhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
     }
 }

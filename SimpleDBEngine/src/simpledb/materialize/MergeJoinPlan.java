@@ -13,7 +13,7 @@ import simpledb.tx.Transaction;
  */
 public class MergeJoinPlan implements Plan {
    private Plan p1, p2;
-   private Plan oldP1, oldP2; 
+   private Plan oldP1, oldP2;
    private String fldname1, fldname2;
    private Schema sch = new Schema();
    
@@ -32,14 +32,14 @@ public class MergeJoinPlan implements Plan {
       // List<String> sortlist1 = Arrays.asList(fldname1);
       HashMap<String, String> sortMap1 = new HashMap<>();
       sortMap1.put(fldname1, "asc");
-      this.oldP1 = p1; 
+      this.oldP1 = p1;
       this.p1 = new SortPlan(tx, p1, sortMap1, false);
 
       this.fldname2 = fldname2;
       // List<String> sortlist2 = Arrays.asList(fldname2);
       HashMap<String, String> sortMap2 = new HashMap<>();
       sortMap2.put(fldname2, "asc");
-      this.oldP2 = p2; 
+      this.oldP2 = p2;
       this.p2 = new SortPlan(tx, p2, sortMap2, false);
       
       sch.addAll(p1.schema());
@@ -107,8 +107,21 @@ public class MergeJoinPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(%s \n\t sort merge join %s)(%s=%s)", 
-			   currQueryPlan, oldP2.getQueryPlan(tblname, currQueryPlan), fldname1, fldname2); 
+	   return String.format("(%s \n\t sort merge join %s)(%s=%s)",
+			   currQueryPlan, oldP2.getQueryPlan(tblname, currQueryPlan), fldname1, fldname2);
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+       String padding = " ".repeat(margin);
+       return String.format(
+               "Sort merge join\n" +
+               "  cond: (%s = %s)\n" +
+               "  -> %s\n" +
+               "  -> %s",
+               fldname1, fldname2,
+               currQueryPlan.replaceAll("\n", "\n" + padding),
+               oldP2.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
    }
 }
 

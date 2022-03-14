@@ -73,8 +73,13 @@ public class TablePlan implements Plan {
    public Schema schema() {
       return layout.schema();
    }
-   
+
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(scan on %s)", tblname); 
+      return String.format("(scan on %s)", tblname);
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+      return String.format("Scan on %s", tblname);
    }
 }

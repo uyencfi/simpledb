@@ -106,9 +106,19 @@ public class GroupByPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("%s \n\n %s(%s)", 
-			   currQueryPlan, 
-			   groupfields.isEmpty() ? "" : "group by " + String.join(", ", groupfields), 
-			   aggfns.stream().map(AggregationFn::getQueryPlan).collect(Collectors.joining(", "))); 
+	   return String.format("%s \n\n %s(%s)",
+			   currQueryPlan,
+			   groupfields.isEmpty() ? "" : "group by " + String.join(", ", groupfields),
+			   aggfns.stream().map(AggregationFn::getQueryPlan).collect(Collectors.joining(", ")));
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+       String padding = " ".repeat(margin);
+	   return String.format(
+	           "Group by %s\n" +
+               "  -> %s",
+               groupfields, currQueryPlan.replaceAll("\n", "\n" + padding)
+       );
    }
 }

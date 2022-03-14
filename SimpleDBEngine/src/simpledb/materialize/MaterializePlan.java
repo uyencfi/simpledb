@@ -86,8 +86,13 @@ public class MaterializePlan implements Plan {
    public Schema schema() {
       return srcplan.schema();
    }
-   
+
    public String getQueryPlan(String tblname, String currQueryPlan) {
+      return "";
+   }
+
+   @Override
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
 	   return ""; 
    }
 }

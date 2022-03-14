@@ -123,6 +123,10 @@ public class IndexInfo {
    }
    
    public String getField() {
-	   return this.fldname; 
+	   return fldname;
+   }
+
+   public String getIndexType() {
+      return idxtype;
    }
 }

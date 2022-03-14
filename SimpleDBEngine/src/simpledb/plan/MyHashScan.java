@@ -146,23 +146,24 @@ public class MyHashScan implements Scan {
             if (fit != null) {      // Found a small enough partition
                 currPartition = i + 1;
                 if (currentScan != null) currentScan.close();
+                // TODO implement hashmap
                 currentScan = new SelectScan(
                         new MultibufferProductScan(tx, other.open(), fit.tableName(), fit.getLayout()),
                         new Predicate(new Term(new Expression(lField), new Expression(rField), "=")));
                 currentScan.beforeFirst();
                 return;
             } else {        // This pair of partition is too big, skip them. We'll recursively HJ them later.
-                System.out.println("Neither the left nor the right partition " + i + " fits in B-2 buffers");
+                // System.out.println("Neither the left nor the right partition " + i + " fits in B-2 buffers");
                 failedPartitionNums.add(i);
                 currPartition = i + 1;
             }
         }
 
-        System.out.println("Iterated through all partitions");
+        // System.out.println("Iterated through all partitions");
         // TODO is currentScan ever null? Yes, when all partitions are too big. All partitions are in failed
         // currentScan = null;
         if (failedPartitionNums.isEmpty()) {      // no failed partitions. DONE !
-            System.out.println("No more failed partitions");
+            // System.out.println("No more failed partitions");
             // TODO should close ?
             currentScan.close();
             currentScan = null;
@@ -197,11 +198,11 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#next()
      */
     public boolean next() {
-        System.out.println("curr partition: " + currPartition + ", buff=" + numBuff);
+        // System.out.println("curr partition: " + currPartition + ", buff=" + numBuff);
         if (currentScan == null) {     // no more partitions
             return false;
         }
-        if (currentScan.next())     // currentScan is not null, don't care about recursiveScan (actually it should be null)
+        if (currentScan.next())
             return true;
         else {
             // currentScan.close();
@@ -220,7 +221,8 @@ public class MyHashScan implements Scan {
     }
 
     /**
-     * Closes all underlying scans.
+     * Closes all underlying scans (actually they are already closed
+     * by other methods so no need to do anything here).
      * @see simpledb.query.Scan#close()
      */
     public void close() {
