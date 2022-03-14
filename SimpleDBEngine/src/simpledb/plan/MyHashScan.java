@@ -224,9 +224,9 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#close()
      */
     public void close() {
-        // if (currentScan != null) currentScan.close();
-        // L.close();
-        // R.close();
+//         if (currentScan != null) currentScan.close();
+//         L.close();
+//         R.close();
     }
 
     /**

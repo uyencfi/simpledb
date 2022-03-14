@@ -21,6 +21,7 @@ import simpledb.tx.Transaction;
 public class HeuristicQueryPlanner implements QueryPlanner {
    private Collection<TablePlanner> tableplanners = new ArrayList<>();
    private MetadataMgr mdm;
+   private String queryPlan = ""; 
    
    public HeuristicQueryPlanner(MetadataMgr mdm) {
       this.mdm = mdm;
@@ -54,6 +55,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
+      System.out.println(this.queryPlan);
       
 
       // Step 4: Aggregate if present
@@ -100,6 +102,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
+      this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
       tableplanners.remove(besttp);
       return bestplan;
    }
@@ -115,6 +118,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       if (bestplan != null)
+    	 this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
          tableplanners.remove(besttp);
       return bestplan;
    }
@@ -129,6 +133,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
+      this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
       tableplanners.remove(besttp);
       return bestplan;
    }
