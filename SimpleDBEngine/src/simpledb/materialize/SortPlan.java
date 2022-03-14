@@ -180,4 +180,8 @@ public class SortPlan implements Plan {
       
       return next;
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("sort", currQueryPlan, tblname);
+   }
 }

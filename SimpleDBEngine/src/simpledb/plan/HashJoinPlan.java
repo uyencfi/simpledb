@@ -96,4 +96,8 @@ public class HashJoinPlan implements Plan {
     public Schema schema() {
         return schema;
     }
+    
+    public String getQueryPlan(String tblname, String currQueryPlan) {
+ 	   return String.format("(%s \n hash join %s)", currQueryPlan, right.getQueryPlan(tblname, currQueryPlan)); 
+    }
 }

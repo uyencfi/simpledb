@@ -89,4 +89,8 @@ public class IndexJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("(%s \n index join on index %s %s)", currQueryPlan, joinfield, p2.getQueryPlan(tblname, currQueryPlan)); 
+   }
 }

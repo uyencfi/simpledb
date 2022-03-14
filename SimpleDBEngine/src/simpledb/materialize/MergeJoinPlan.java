@@ -102,5 +102,9 @@ public class MergeJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("(%s \n sort merge join %s)", currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan)); 
+   }
 }
 

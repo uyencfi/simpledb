@@ -83,4 +83,8 @@ public class SelectPlan implements Plan {
    public Schema schema() {
       return p.schema();
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("(scan on %s)", tblname);
+   }
 }
