@@ -28,7 +28,7 @@ class TablePlanner {
    private Map<String,IndexInfo> indexes;
    private Transaction tx;
    private String tblname;
-   
+
    /**
     * Creates a new table planner.
     * The specified predicate applies to the entire query.
@@ -45,7 +45,7 @@ class TablePlanner {
       myplan   = new TablePlan(tx, tblname, mdm);
       myschema = myplan.schema();
       indexes  = mdm.getIndexInfo(tblname, tx);
-      this.tblname = tblname; 
+      this.tblname = tblname;
    }
    
    /**
@@ -73,40 +73,34 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = makeIndexJoin(current, currsch);
-      if (p != null) {
-    	  return p; 
+
+      System.out.println("Has Non-equality pred: " + joinpred.hasNonEqualityPredicate());
+      if (joinpred.hasNonEqualityPredicate()) {
+         return makeBlockNestedLoopJoin(current, currsch);
       }
-      // Plan product = makeProductJoin(current, currsch);
-      Plan bnl = makeBlockNestedLoopJoin(current, currsch);
+
+      Plan p = makeBlockNestedLoopJoin(current, currsch);
+      // Plan bnl = makeBlockNestedLoopJoin(current, currsch);
+      // p = bnl;
+      Plan index = makeIndexJoin(current, currsch);
       Plan sortMerge = makeMergeJoin(current, currsch);
       Plan hash = makeHashJoin(current, currsch);
-      p = bnl;
-      // if (p != null) System.out.println("index: " + p.recordsOutput());
-      // System.out.println("prod: " + product.recordsOutput());
-//      System.out.println("sort-merge: " + sortMerge.recordsOutput());
-//      System.out.println("hash join: " + hash.recordsOutput());
-      if (sortMerge.recordsOutput() < p.recordsOutput() && sortMerge.recordsOutput() < hash.recordsOutput() ) {
+
+      System.out.println("Bnl: " + p.recordsOutput());
+      if (index != null) System.out.println("index: " + p.recordsOutput());
+      System.out.println("sort-merge: " + sortMerge.recordsOutput());
+      System.out.println("hash join: " + hash.recordsOutput());
+
+      if (index != null && p.recordsOutput() > index.recordsOutput()) {
+         p = index;
+      }
+      if (p.recordsOutput() > hash.recordsOutput()) {
+         p = hash;
+      }
+      if (p.recordsOutput() > sortMerge.recordsOutput()) {
          p = sortMerge;
       }
-//      if (index != null && p.recordsOutput() > index.recordsOutput()) {
-//         p = index;
-//      }
-//       if (p == null || p.recordsOutput() > product.recordsOutput()) {
-//          p = product;
-//       }
-      if (hash.recordsOutput() < p.recordsOutput()) {
-    	  p = hash;
-      }
-//       if (p.recordsOutput() > sortMerge.recordsOutput()) {
-//          System.out.println("choose sort-merge join");
-//          p = sortMerge;
-//       }
-//       if (p.recordsOutput() > hash.recordsOutput()) {
-//          System.out.println("choose hash join");
-//          p = hash;
-//       }
-//      p = hash;
+      // p = hash;
       return p;
    }
 
@@ -126,7 +120,7 @@ class TablePlanner {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       return new BnlJoinPlan(tx, current, myplan, subPred);
    }
-   
+
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
          Constant val = mypred.equatesWithConstant(fldname);
@@ -180,10 +174,7 @@ class TablePlanner {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
       // System.out.println(Arrays.toString(fields));
-      Plan p = new HashJoinPlan(
-              tx,
-              current, addSelectPred(myplan),
-              fields[0], fields[1]
+      Plan p = new HashJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]
       );
       return p;
       // return addJoinPred(p, currsch);
@@ -205,7 +196,7 @@ class TablePlanner {
       else
          return p;
    }
-   
+
    public String getTblname() {
 	   return this.tblname;
    }

@@ -162,4 +162,8 @@ public class Term {
    public String toString() {
       return lhs.toString() + " " + opr + " " + rhs.toString();
    }
+
+   public boolean isNonEqualityTerm() {
+      return !opr.equals("=");
+   }
 }
