@@ -18,7 +18,8 @@ public class SortPlan implements Plan {
    private Plan p;
    private Schema sch;
    private RecordComparator comp;
-   private boolean isDistinct; 
+   private boolean isDistinct;
+   private HashMap<String, String> sortfields;
    
    /**
     * Create a sort plan for the specified query.
@@ -32,6 +33,7 @@ public class SortPlan implements Plan {
       this.isDistinct = isDistinct; 
       sch = p.schema();
       comp = new RecordComparator(sortfields);
+      this.sortfields = sortfields;
    }
    
    /**
@@ -167,7 +169,6 @@ public class SortPlan implements Plan {
       
       if (isDistinct) {
 	      while (next) {
-	    	 System.out.println("check " + src.getVal("majorid")); 
 	    	 for (String fldname : sch.fields()) {
 	             if (store.get(fldname) != src.getVal(fldname)) {
 	            	 return next;
@@ -175,9 +176,17 @@ public class SortPlan implements Plan {
 	          }
 	    	 next = src.next();
 	      }
-	      System.out.println("end "); 
       }
       
       return next;
+   }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   String sortBy = "sort by";
+	   for (Map.Entry<String, String> element: sortfields.entrySet()) {
+		   sortBy += String.format(" %s %s,", element.getKey(), element.getValue());
+	   }
+	   sortBy = sortBy.substring(0, sortBy.length() - 1);
+	   return String.format("%s \n %s%s", currQueryPlan, isDistinct ? "get distinct and " : "", sortBy);
    }
 }

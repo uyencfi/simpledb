@@ -79,4 +79,9 @@ public class BnlJoinPlan implements Plan {
     public Schema schema() {
         return sch;
     }
+    
+    public String getQueryPlan(String tblname, String currQueryPlan) {
+ 	   return String.format("(%s \n\t block nested loop join %s)(%s)", 
+ 			   currQueryPlan, rhs.getQueryPlan(tblname, currQueryPlan), this.joinPred); 
+    }
 }

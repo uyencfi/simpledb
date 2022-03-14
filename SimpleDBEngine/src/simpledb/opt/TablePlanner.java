@@ -9,6 +9,7 @@ import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.BnlJoinPlan;
+import simpledb.plan.HashJoinPlan;
 import simpledb.plan.Plan;
 import simpledb.plan.SelectPlan;
 import simpledb.plan.TablePlan;
@@ -26,7 +27,8 @@ class TablePlanner {
    private Schema myschema;
    private Map<String,IndexInfo> indexes;
    private Transaction tx;
-   
+   private String tblname;
+
    /**
     * Creates a new table planner.
     * The specified predicate applies to the entire query.
@@ -43,6 +45,7 @@ class TablePlanner {
       myplan   = new TablePlan(tx, tblname, mdm);
       myschema = myplan.schema();
       indexes  = mdm.getIndexInfo(tblname, tx);
+      this.tblname = tblname;
    }
    
    /**
@@ -59,9 +62,8 @@ class TablePlanner {
    
    /**
     * Constructs a join plan of the specified plan
-    * and the table.  The plan will use an indexjoin, if possible.
-    * (Which means that if an indexselect is also possible,
-    * the indexjoin operator takes precedence.)
+    * and the table.  The plan will choose among an indexjoin (if possible)
+    * a sortmerge join, and a product (block nested loop) join.
     * The method returns null if no join is possible.
     * @param current the specified plan
     * @return a join plan of the plan and this table
@@ -71,20 +73,35 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      // Plan prod = makeProductJoin(current, currsch);
-      // Plan hash = makeHashJoin(...);
-      Plan p = makeBlockNestedLoopJoin(current, currsch);
-      Plan sortMerge = makeMergeJoin(current, currsch);
-      Plan index = makeIndexJoin(current, currsch);
 
-      // compare recordsOutput()
-      if (p.recordsOutput() > sortMerge.recordsOutput()) {
-         p = sortMerge;
+//      System.out.println("Has Non-equality pred: " + joinpred.hasNonEqualityPredicate());
+      if (joinpred.hasNonEqualityPredicate()) {
+         return makeBlockNestedLoopJoin(current, currsch);
       }
+
+      Plan p = makeBlockNestedLoopJoin(current, currsch);
+      // Plan bnl = makeBlockNestedLoopJoin(current, currsch);
+      // p = bnl;
+      Plan index = makeIndexJoin(current, currsch);
+      Plan sortMerge = makeMergeJoin(current, currsch);
+      Plan hash = makeHashJoin(current, currsch);
+
+//      System.out.println("Bnl: " + p.recordsOutput());
+//      if (index != null) System.out.println("index: " + p.recordsOutput());
+//      System.out.println("sort-merge: " + sortMerge.recordsOutput());
+//      System.out.println("hash join: " + hash.recordsOutput());
+
       if (index != null && p.recordsOutput() > index.recordsOutput()) {
          p = index;
       }
-      return p;
+      if (p.recordsOutput() > hash.recordsOutput()) {
+         p = hash;
+      }
+      if (p.recordsOutput() > sortMerge.recordsOutput()) {
+         p = sortMerge;
+      }
+      return index;
+//      return p;
    }
 
    
@@ -103,7 +120,7 @@ class TablePlanner {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       return new BnlJoinPlan(tx, current, myplan, subPred);
    }
-   
+
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
          Constant val = mypred.equatesWithConstant(fldname);
@@ -135,7 +152,6 @@ class TablePlanner {
    }
 
    private Plan makeMergeJoin(Plan current, Schema currsch) {
-      // process pred here
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
       // System.out.println(Arrays.toString(fields));
@@ -144,13 +160,24 @@ class TablePlanner {
       // return addJoinPred(p, currsch);
    }
 
+   // for extracting the correct field name in the join predicate;
+   // used in makeMergeJoin() and makeHashJoin()
    private String[] getFields(Predicate subPred, Schema currSchema) {
       Term t = subPred.getFirst();
-      // TODO check for order of fields (might mismatch field1, field2)
       if (t.getLhs().appliesTo(currSchema)) {
          return new String[] {t.getLhs().asFieldName(), t.getRhs().asFieldName()};
       }
       return new String[] {t.getRhs().asFieldName(), t.getLhs().asFieldName()};
+   }
+
+   private Plan makeHashJoin(Plan current, Schema currsch) {
+      Predicate subPred = mypred.joinSubPred(currsch, myschema);
+      String[] fields = getFields(subPred, currsch);
+      // System.out.println(Arrays.toString(fields));
+      Plan p = new HashJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]
+      );
+      return p;
+      // return addJoinPred(p, currsch);
    }
 
 
@@ -168,5 +195,9 @@ class TablePlanner {
          return new SelectPlan(p, joinpred);
       else
          return p;
+   }
+
+   public String getTblname() {
+	   return this.tblname;
    }
 }

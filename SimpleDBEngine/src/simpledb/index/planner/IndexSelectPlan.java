@@ -78,4 +78,8 @@ public class IndexSelectPlan implements Plan {
    public Schema schema() {
       return p.schema(); 
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("(index select %s on %s=%s)", tblname, ii.getField(), val); 
+   }
 }

@@ -71,4 +71,8 @@ public class ProjectPlan implements Plan {
    public Schema schema() {
       return schema;
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("%s \n project on (%s)", currQueryPlan, String.join(", ", schema.fields())); 
+   }
 }

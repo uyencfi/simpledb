@@ -21,6 +21,7 @@ import simpledb.tx.Transaction;
 public class HeuristicQueryPlanner implements QueryPlanner {
    private Collection<TablePlanner> tableplanners = new ArrayList<>();
    private MetadataMgr mdm;
+   private String queryPlan = ""; 
    
    public HeuristicQueryPlanner(MetadataMgr mdm) {
       this.mdm = mdm;
@@ -42,7 +43,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          tableplanners.add(tp);
       }
       
-      System.out.println("select " + data.pred().toString()); 
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
       
@@ -59,17 +59,20 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4: Aggregate if present
       Plan p = currentplan;
       if (!data.groupByFields().isEmpty() || !data.aggregateFields().isEmpty()) {
-         System.out.println("group by plan created");
+//         System.out.println("group by plan created");
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
+         this.queryPlan = p.getQueryPlan("", this.queryPlan);
       }
 
       // Step 5. Project on the field names
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
-
+      this.queryPlan = p.getQueryPlan("", this.queryPlan);
+      
       // If no need to sort or get distinct, just return p.
       if (data.sorts().isEmpty() && !data.getIsDistinct()) {
+         System.out.println(this.queryPlan + "\n");
          return p;
       }
 
@@ -83,10 +86,12 @@ public class HeuristicQueryPlanner implements QueryPlanner {
      		sortMap.put(field, "asc");
     	 }
       }
-      
       // Step 6. Order by and remove duplicates if distinct specified
       p = new SortPlan(tx, p, sortMap, data.getIsDistinct()); 
+      this.queryPlan = p.getQueryPlan("", this.queryPlan); 
       
+      System.out.println(this.queryPlan + "\n");
+
       return p;
    }
    
@@ -100,6 +105,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
+      this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
       tableplanners.remove(besttp);
       return bestplan;
    }
@@ -115,6 +121,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       if (bestplan != null)
+    	 this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
          tableplanners.remove(besttp);
       return bestplan;
    }
@@ -129,6 +136,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
+      this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
       tableplanners.remove(besttp);
       return bestplan;
    }

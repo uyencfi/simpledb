@@ -76,4 +76,8 @@ public class ProductPlan implements Plan {
    public Schema schema() {
       return schema;
    }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("(%s cross product with %s)", currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan)); 
+   }
 }

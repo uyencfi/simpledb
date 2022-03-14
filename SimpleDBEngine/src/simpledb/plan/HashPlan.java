@@ -91,4 +91,8 @@ public class HashPlan implements Plan {
     public Schema schema() {
         return schema;
     }
+    
+    public String getQueryPlan(String tblname, String currQueryPlan) {
+ 	   return String.format("(%s hash join (index scan on %s))", currQueryPlan, tblname); 
+    }
 }

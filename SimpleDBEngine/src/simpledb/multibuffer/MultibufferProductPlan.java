@@ -63,7 +63,7 @@ public class MultibufferProductPlan implements Plan {
       // this guesses at the # of chunks
       int avail = tx.availableBuffs();
       int size = new MaterializePlan(tx, rhs).blocksAccessed();
-      int numchunks = size / avail;
+      int numchunks = Math.max(1, size / avail);
       return rhs.blocksAccessed() +
             (lhs.blocksAccessed() * numchunks);
    }
@@ -113,5 +113,10 @@ public class MultibufferProductPlan implements Plan {
       src.close();
       dest.close();
       return t;
+   }
+   
+   public String getQueryPlan(String tblname, String currQueryPlan) {
+	   return String.format("(%s \n\t multibuffer cross product with %s)", 
+			   currQueryPlan, rhs.getQueryPlan(tblname, currQueryPlan)); 
    }
 }

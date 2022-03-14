@@ -156,4 +156,13 @@ public class Predicate {
          result += " and " + iter.next().toString();
       return result;
    }
+
+    public boolean hasNonEqualityPredicate() {
+       for (Term t : terms) {
+          if (t.isNonEqualityTerm()) {
+             return true;
+          }
+       }
+       return false;
+    }
 }
