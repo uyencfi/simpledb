@@ -1,6 +1,7 @@
 package simpledb.materialize;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
@@ -105,6 +106,9 @@ public class GroupByPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("group by", currQueryPlan, tblname); 
+	   return String.format("%s \n\n %s(%s)", 
+			   currQueryPlan, 
+			   groupfields.isEmpty() ? "" : "group by " + String.join(", ", groupfields), 
+			   aggfns.stream().map(AggregationFn::getQueryPlan).collect(Collectors.joining(", "))); 
    }
 }

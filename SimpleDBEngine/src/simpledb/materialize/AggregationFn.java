@@ -35,4 +35,6 @@ public interface AggregationFn {
     * @return the computed aggregation value
     */
    Constant value();
+   
+   String getQueryPlan();
 }

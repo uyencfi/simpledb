@@ -43,7 +43,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          tableplanners.add(tp);
       }
       
-      System.out.println("select " + data.pred().toString()); 
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
       
@@ -55,7 +54,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
-      System.out.println(this.queryPlan);
       
 
       // Step 4: Aggregate if present
@@ -63,13 +61,16 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       if (!data.groupByFields().isEmpty() || !data.aggregateFields().isEmpty()) {
          System.out.println("group by plan created");
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
+         this.queryPlan = p.getQueryPlan("", this.queryPlan);
       }
 
       // Step 5. Project on the field names
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
-
+      this.queryPlan = p.getQueryPlan("", this.queryPlan);
+      
+      System.out.println(this.queryPlan);
       // If no need to sort or get distinct, just return p.
       if (data.sorts().isEmpty() && !data.getIsDistinct()) {
          return p;

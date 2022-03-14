@@ -67,4 +67,8 @@ public class CountFn implements AggregationFn {
    public Constant value() {
       return new Constant(count);
    }
+   
+   public String getQueryPlan() {
+	   return String.format("count(%s%s)", isDistinct ? "distinct" : "",fldname);
+   }
 }

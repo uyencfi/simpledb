@@ -54,4 +54,8 @@ public class MaxFn implements AggregationFn {
    public Constant value() {
       return val;
    }
+   
+   public String getQueryPlan() {
+	   return String.format("max(%s)", fldname);
+   }
 }

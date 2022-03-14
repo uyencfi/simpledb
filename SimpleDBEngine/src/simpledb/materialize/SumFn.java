@@ -68,4 +68,8 @@ public class SumFn implements AggregationFn {
    public Constant value() {
       return new Constant(sum);
    }
+   
+   public String getQueryPlan() {
+	   return String.format("sum(%s%s)", isDistinct ? "distinct" : "",fldname);
+   }
 }

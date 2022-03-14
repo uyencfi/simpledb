@@ -91,6 +91,7 @@ public class IndexJoinPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(%s \n index join on index %s %s)", currQueryPlan, joinfield, p2.getQueryPlan(tblname, currQueryPlan)); 
+	   return String.format("(%s \n\t index join %s)(on index %s)", 
+			   currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan), joinfield); 
    }
 }

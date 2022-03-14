@@ -98,6 +98,7 @@ public class HashJoinPlan implements Plan {
     }
     
     public String getQueryPlan(String tblname, String currQueryPlan) {
- 	   return String.format("(%s \n hash join %s)", currQueryPlan, right.getQueryPlan(tblname, currQueryPlan)); 
+ 	   return String.format("(%s \n\t hash join %s)(%s=%s)", 
+ 			   currQueryPlan, right.getQueryPlan(tblname, currQueryPlan), lFieldName, rFieldName); 
     }
 }

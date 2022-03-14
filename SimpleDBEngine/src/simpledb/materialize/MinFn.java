@@ -58,4 +58,8 @@ public class MinFn implements AggregationFn {
    public Constant value() {
       return val;
    }
+   
+   public String getQueryPlan() {
+	   return String.format("min(%s)",fldname);
+   }
 }

@@ -104,7 +104,8 @@ public class MergeJoinPlan implements Plan {
    }
    
    public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(%s \n sort merge join %s)", currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan)); 
+	   return String.format("(%s \n\t sort merge join %s)(%s=%s)", 
+			   currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan), fldname1, fldname2); 
    }
 }
 

@@ -70,4 +70,8 @@ public class AvgFn implements AggregationFn {
    public Constant value() {
       return new Constant(sum / count);
    }
+   
+   public String getQueryPlan() {
+	   return String.format("avg(%s%s)", isDistinct ? "distinct" : "",fldname);
+   }
 }
