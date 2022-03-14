@@ -1,5 +1,7 @@
 package simpledb.materialize;
 
+import java.util.HashSet;
+
 import simpledb.query.Constant;
 import simpledb.query.Scan;
 
@@ -10,13 +12,16 @@ import simpledb.query.Scan;
 public class CountFn implements AggregationFn {
    private String fldname;
    private int count;
+   private HashSet<Constant> set = new HashSet<>(); 
+   private boolean isDistinct; 
    
    /**
     * Create a count aggregation function for the specified field.
     * @param fldname the name of the aggregated field
     */
-   public CountFn(String fldname) {
+   public CountFn(String fldname, boolean isDistinct) {
       this.fldname = fldname;
+      this.isDistinct = isDistinct; 
    }
    
    /**
@@ -29,6 +34,7 @@ public class CountFn implements AggregationFn {
     */
    public void processFirst(Scan s) {
       count = 1;
+      set.add(s.getVal(fldname)); 
    }
    
    /**
@@ -38,7 +44,12 @@ public class CountFn implements AggregationFn {
     * @see AggregationFn#processNext(Scan)
     */
    public void processNext(Scan s) {
-      count++;
+      Constant nextVal = s.getVal(fldname);
+	  if (isDistinct && set.contains(nextVal)) {
+		  return;
+	  }
+	  set.add(nextVal); 
+	  count++;
    }
    
    /**

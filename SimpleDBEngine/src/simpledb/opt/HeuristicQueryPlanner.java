@@ -2,6 +2,7 @@ package simpledb.opt;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import simpledb.materialize.*;
@@ -41,6 +42,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          tableplanners.add(tp);
       }
       
+      System.out.println("select " + data.pred().toString()); 
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
       
@@ -52,6 +54,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
+      
 
       // Step 4: Aggregate if present
       Plan p = currentplan;
@@ -60,16 +63,30 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
       }
 
-      // Step 5.  Sort if present
-      if (!data.sorts().isEmpty()) {
-         System.out.println("sort plan created");
-         p = new SortPlan(tx, p, data.sorts());
-      }
-
-      // Step 6. Project on the field names
+      // Step 5. Project on the field names
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
+
+      // If no need to sort or get distinct, just return p.
+      if (data.sorts().isEmpty() && !data.getIsDistinct()) {
+         return p;
+      }
+
+      // Else, add a SortPlan node
+      HashMap<String, String> sortMap = new HashMap<>(); 
+      if (!data.sorts().isEmpty()) {
+//         System.out.println("sort plan created");
+    	 sortMap = data.sorts();
+      } else {
+    	 for (String field : p.schema().fields()) {
+     		sortMap.put(field, "asc");
+    	 }
+      }
+      
+      // Step 6. Order by and remove duplicates if distinct specified
+      p = new SortPlan(tx, p, sortMap, data.getIsDistinct()); 
+      
       return p;
    }
    

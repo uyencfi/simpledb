@@ -43,7 +43,7 @@ public class SimpleIJ {
          ResultSetMetaData md = rs.getMetaData();
          int numcols = md.getColumnCount();
          int totalwidth = 0;
-
+                  
          // print header
          for(int i=1; i<=numcols; i++) {
             String fldname = md.getColumnName(i);

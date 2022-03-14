@@ -66,6 +66,14 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
+      
+      // distinct
+      boolean isDistinct = false; 
+      if (lex.matchKeyword("distinct")) {
+    	  lex.eatKeyword("distinct");
+    	  isDistinct = true; 
+      }
+      
       List<String> fields = new ArrayList<>();
       List<AggregationFn> aggregateFields = new ArrayList<>();
       selectList(fields, aggregateFields);
@@ -92,33 +100,62 @@ public class Parser {
          sorts = sortList();
          // System.out.println(sorts);
       }
-      return new QueryData(fields, aggregateFields, tables, pred, groupBy, sorts);
+      return new QueryData(fields, aggregateFields, tables, pred, groupBy, sorts, isDistinct);
    }
 
    private void selectList(List<String> fields, List<AggregationFn> aggregateFields) {
+      boolean isDistinct = false; 
       if (lex.matchKeyword("sum")) {
          lex.eatKeyword("sum");
          lex.eatDelim('(');
-         aggregateFields.add(new SumFn(field()));
+         
+         if (lex.matchKeyword("distinct")) {
+        	lex.eatKeyword("distinct");
+       	  	isDistinct = true; 
+         }
+         
+         aggregateFields.add(new SumFn(field(), isDistinct));
          lex.eatDelim(')');
       } else if (lex.matchKeyword("count")) {
          lex.eatKeyword("count");
          lex.eatDelim('(');
-         aggregateFields.add(new CountFn(field()));
+         
+         if (lex.matchKeyword("distinct")) {
+         	lex.eatKeyword("distinct");
+        	  	isDistinct = true; 
+         }
+         
+         aggregateFields.add(new CountFn(field(), isDistinct));
          lex.eatDelim(')');
       } else if (lex.matchKeyword("avg")) {
          lex.eatKeyword("avg");
          lex.eatDelim('(');
-         aggregateFields.add(new AvgFn(field()));
+         
+         if (lex.matchKeyword("distinct")) {
+         	lex.eatKeyword("distinct");
+        	  	isDistinct = true; 
+         }
+         
+         aggregateFields.add(new AvgFn(field(), isDistinct));
          lex.eatDelim(')');
       } else if (lex.matchKeyword("min")) {
          lex.eatKeyword("min");
          lex.eatDelim('(');
+         
+         if (lex.matchKeyword("distinct")) {
+         	lex.eatKeyword("distinct");
+         }
+         
          aggregateFields.add(new MinFn(field()));
          lex.eatDelim(')');
       } else if (lex.matchKeyword("max")) {
          lex.eatKeyword("max");
          lex.eatDelim('(');
+         
+         if (lex.matchKeyword("distinct")) {
+         	lex.eatKeyword("distinct"); 
+         }
+         
          aggregateFields.add(new MaxFn(field()));
          lex.eatDelim(')');
       } else {

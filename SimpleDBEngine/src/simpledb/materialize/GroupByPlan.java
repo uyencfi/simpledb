@@ -33,7 +33,7 @@ public class GroupByPlan implements Plan {
       for (String f : groupfields) {
          sortMap.put(f, "asc");
       }
-      this.p = new SortPlan(tx, p, sortMap);
+      this.p = new SortPlan(tx, p, sortMap, false);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)

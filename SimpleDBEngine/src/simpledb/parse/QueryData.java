@@ -16,18 +16,20 @@ public class QueryData {
    private Predicate pred;
    private List<String> groupByFields;
    private HashMap<String, String> sorts;
+   private boolean isDistinct; 
    
    /**
     * Saves the field and table list and predicate.
     */
    public QueryData(List<String> fields, List<AggregationFn> aggregateFields, Collection<String> tables,
-                    Predicate pred, List<String> groupByFields, HashMap<String, String> sorts) {
+                    Predicate pred, List<String> groupByFields, HashMap<String, String> sorts, boolean isDistinct) {
       this.fields = fields;
       this.aggregateFields = aggregateFields;
       this.tables = tables;
       this.pred = pred;
       this.groupByFields = groupByFields;
       this.sorts = sorts;
+      this.isDistinct = isDistinct; 
    }
    
    /**
@@ -61,6 +63,15 @@ public class QueryData {
     */
    public Predicate pred() {
       return pred;
+   }
+   
+   /**
+    * Returns the boolean that describes whether 
+    * output tuples should be distinct
+    * @return the boolean value
+    */
+   public boolean getIsDistinct() {
+	   return isDistinct; 
    }
 
    /**
