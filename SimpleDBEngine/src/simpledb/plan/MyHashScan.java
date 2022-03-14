@@ -57,7 +57,8 @@ public class MyHashScan implements Scan {
 
         choosePrimesForHash();
         runPartitionPhase();
-        runJoinPhase();
+        // runJoinPhase();
+        JoinMore();
     }
 
     // --------- Methods for Partition Phase -------------------------------
@@ -122,68 +123,68 @@ public class MyHashScan implements Scan {
 
     // --------- Methods for Join Phase -------------------------------
 
-    private void runJoinPhase() {
-        // If we have iterated through all partitions
-        // TODO put next()#pre-runJoinPhase: current/recursiveScan.close() :here
-        if (currPartition >= lPartitions.length) {
-            System.out.println("Iterated through all partitions");
-            // assert currentScan != null;
-            // currentScan.close();
-            currentScan = null;
-            if (failedPartitionNums.isEmpty()) {      // no failed partitions. DONE !
-                System.out.println("No more failed partitions");
-                // if (recursiveScan != null) recursiveScan.close();
-                recursiveScan = null;   // Once both scans are null, next() will return false
-            } else {       // else, there are some failed partitions. Cannot stop yet. Must also join them!
-                recursiveHashJoin();
+    /**
+     * Runs the join phase. Iterates over the array of partitions and joins those
+     * that fit in memory first (skipping over those that are too large). Only when all
+     * in-memory partitions have been joined, will it run recursive hash join on the
+     * too-big partitions.
+     */
+    private void JoinMore() {
+        for (int i = currPartition; i < lPartitions.length; i++) {
+            TempTable lTable = lPartitions[i];
+            TempTable rTable = rPartitions[i];
+
+            TempTable fit = null, other = null;
+            if (tx.size(lTable.tableName()) < numBuff - 2) {
+                fit = lTable;
+                other = rTable;
+            } else if (tx.size(rTable.tableName()) < numBuff - 2) {
+                fit = rTable;
+                other = lTable;
             }
-            return;
+
+            if (fit != null) {      // Found a small enough partition
+                currPartition = i + 1;
+                if (currentScan != null) currentScan.close();
+                currentScan = new SelectScan(
+                        new MultibufferProductScan(tx, other.open(), fit.tableName(), fit.getLayout()),
+                        new Predicate(new Term(new Expression(lField), new Expression(rField), "=")));
+                currentScan.beforeFirst();
+                return;
+            } else {        // This pair of partition is too big, skip them. We'll recursively HJ them later.
+                System.out.println("Neither the left nor the right partition " + i + " fits in B-2 buffers");
+                failedPartitionNums.add(i);
+                currPartition = i + 1;
+            }
         }
 
-        TempTable lTable = lPartitions[currPartition];
-        TempTable rTable = rPartitions[currPartition];
-
-        // If one partition fits inside the buffer, then join this pair of partitions
-        // using a block-nested loop join followed by a selection on the join predicate.
-        TempTable fit = null, other = null;
-        if (tx.size(lTable.tableName()) < numBuff - 2) {
-            fit = lTable;
-            other = rTable;
-        } else if (tx.size(rTable.tableName()) < numBuff - 2) {
-            fit = rTable;
-            other = lTable;
-        }
-
-        if (fit != null) {      // Found a small enough partition
-            currPartition++;
-            currentScan = new SelectScan(
-                    new MultibufferProductScan(tx, other.open(), fit.tableName(), fit.getLayout()),
-                    new Predicate(new Term(new Expression(lField), new Expression(rField), "=")));
-            currentScan.beforeFirst();
-        } else {        // This pair of partition is too big, skip them. We'll recursively HJ them later.
-            failedPartitionNums.add(currPartition);
-            currPartition++;
-            runJoinPhase();     // Keep iterating
+        System.out.println("Iterated through all partitions");
+        // TODO is currentScan ever null? Yes, when all partitions are too big. All partitions are in failed
+        // currentScan = null;
+        if (failedPartitionNums.isEmpty()) {      // no failed partitions. DONE !
+            System.out.println("No more failed partitions");
+            // TODO should close ?
+            currentScan.close();
+            currentScan = null;
+        } else {       // else, there are some failed partitions. Cannot stop yet. Must also join them!
+            recursiveHashJoin();
         }
     }
-
-    /* Additional field to hold the scan we get from recursively applying Hash join
-     * recursiveScan and currentScan can NOT be both active (i.e. at least one must be null) */
-    MyHashScan recursiveScan = null;
 
     /**
      * Recursively applies Hash Join to the partitions that were too big to fit in memory.
      * Assumption: at least 1 failed partition remaining.
      */
     private void recursiveHashJoin() {
+        assert failedPartitionNums.size() >= 1;
         int failedNum = failedPartitionNums.get(0);
-        if (recursiveScan != null) {
-            recursiveScan.close();     // close the previous recursiveScan
+        if (currentScan != null) {
+            currentScan.close();
         }
         Scan leftPartition = lPartitions[failedNum].open();
         Scan rightPartition = rPartitions[failedNum].open();
-        recursiveScan = new MyHashScan(tx, leftPartition, rightPartition, lSchema, rSchema, lField, rField);
-        recursiveScan.beforeFirst();
+        currentScan = new MyHashScan(tx, leftPartition, rightPartition, lSchema, rSchema, lField, rField);
+        currentScan.beforeFirst();
         failedPartitionNums.remove(0);
     }
 
@@ -196,46 +197,34 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#next()
      */
     public boolean next() {
-        if (currentScan == null && recursiveScan == null) {     // both scans are null
+        System.out.println("curr partition: " + currPartition + ", buff=" + numBuff);
+        if (currentScan == null) {     // no more partitions
             return false;
-        }
-        if (currentScan == null) {   // recursiveScan is not null
-            if (!recursiveScan.next()) {
-                System.out.println("recursiveScan ran out. Calling recursiveHashJoin() again...");
-                recursiveScan.close();
-                runJoinPhase();     // reached the end of recursiveScan. This will init another recursive scan, if any still remains.
-            }
-            else    return true;
         }
         if (currentScan.next())     // currentScan is not null, don't care about recursiveScan (actually it should be null)
             return true;
         else {
-            currentScan.close();
-            runJoinPhase();
+            // currentScan.close();
+            JoinMore();
             return next();
         }
     }
 
     /**
-     * Position the scan before the first record.
+     * Positions the scan before the first record.
      * @see simpledb.query.Scan#beforeFirst()
      */
     public void beforeFirst() {
-        if (currentScan != null) {
-            currentScan.beforeFirst();
-        } else if (recursiveScan != null) {
-            recursiveScan.beforeFirst();
-        }
-        // throw new RuntimeException("MyHashScan.beforeFirst(): No active scans!");
+        assert currentScan != null;
+        currentScan.beforeFirst();
     }
 
     /**
-     * Close all underlying scans.
+     * Closes all underlying scans.
      * @see simpledb.query.Scan#close()
      */
     public void close() {
         // if (currentScan != null) currentScan.close();
-        // if (recursiveScan != null) recursiveScan.close();
         // L.close();
         // R.close();
     }
@@ -247,11 +236,8 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#getVal(String)
      */
     public Constant getVal(String fldname) {
-        if (currentScan != null) {
-            return currentScan.getVal(fldname);
-        } else {
-            return recursiveScan.getVal(fldname);
-        }
+        assert currentScan != null;
+        return currentScan.getVal(fldname);
     }
 
     /**
@@ -261,11 +247,8 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#getInt(String)
      */
     public int getInt(String fldname) {
-        if (currentScan != null) {
-            return currentScan.getInt(fldname);
-        } else {
-            return recursiveScan.getInt(fldname);
-        }
+        assert currentScan != null;
+        return currentScan.getInt(fldname);
     }
 
     /**
@@ -275,11 +258,8 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#getString(String)
      */
     public String getString(String fldname) {
-        if (currentScan != null) {
-            return currentScan.getString(fldname);
-        } else {
-            return recursiveScan.getString(fldname);
-        }
+        assert currentScan != null;
+        return currentScan.getString(fldname);
     }
 
     /**
@@ -288,8 +268,8 @@ public class MyHashScan implements Scan {
      * @see simpledb.query.Scan#hasField(String)
      */
     public boolean hasField(String fldname) {
-        return currentScan != null && currentScan.hasField(fldname)
-                || recursiveScan != null && recursiveScan.hasField(fldname);
+        assert currentScan != null;
+        return currentScan.hasField(fldname);
     }
 
     // --------- Methods to choose the primes ----------------------
