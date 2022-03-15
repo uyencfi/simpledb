@@ -20,9 +20,11 @@ import simpledb.record.Schema;
  */
 public class Parser {
    private Lexer lex;
-   
+   private static List<String> primaryKeys;
+
    public Parser(String s) {
       lex = new Lexer(s);
+      primaryKeys = Arrays.asList("sid", "did", "cid", "eid", "sectid");
    }
    
 // Methods for parsing predicates, terms, expressions, constants, and fields
@@ -179,10 +181,23 @@ public class Parser {
 
    /**
     * Can only select fields that also appear in GROUP BY clause.
-    * Assuming non-empty Group by, throws BadSyntaxException
-    * if a select field does not exist in Group by.
+    *
+    * If the Group by contains a primary key, then can select any field
+    * (due to the PK, each group will be a single row). In that case,
+    * the Group by fields is essentially the Select fields -- We replace
+    * Group by fields with the Select fields (this is for the Project node to work later).
+    *
+    * Throws BadSyntaxException if a select field does not exist in Group by.
     */
    private void checkSelectInGroupBy(List<String> selectFields, List<String> groupByFields) {
+      for (String group : groupByFields) {
+         if (primaryKeys.contains(group)) {    // if group by the PK, can select any column
+            groupByFields.clear();
+            groupByFields.add(group);     // re-add the PK
+            groupByFields.addAll(selectFields);    // add all the select fields
+            return;
+         }
+      }
       for (String f : selectFields) {
          if (!groupByFields.contains(f)) {
             throw new BadSyntaxException();
