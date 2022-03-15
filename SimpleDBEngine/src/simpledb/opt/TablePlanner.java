@@ -71,8 +71,9 @@ class TablePlanner {
    public Plan makeJoinPlan(Plan current) {
       Schema currsch = current.schema();
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
-      if (joinpred == null)
+      if (joinpred == null) {
          return null;
+      }
 
 //      System.out.println("Has Non-equality pred: " + joinpred.hasNonEqualityPredicate());
       if (joinpred.hasNonEqualityPredicate()) {
@@ -90,14 +91,19 @@ class TablePlanner {
       System.out.println("sort-merge: " + sortMerge.recordsOutput());
       System.out.println("hash join: " + hash.recordsOutput());
 
+      System.out.println("blocks accessed"); 
+      if (index != null) System.out.println("index: " + index.blocksAccessed());
+      System.out.println("sort-merge: " + sortMerge.blocksAccessed());
+      System.out.println("hash join: " + hash.blocksAccessed());
+      
       p = bnl;
-      if (index != null && p.recordsOutput() > index.recordsOutput()) {
+      if (index != null && p.blocksAccessed() > index.blocksAccessed()) {
          p = index;
       }
-      if (p.recordsOutput() > hash.recordsOutput()) {
+      if (p.blocksAccessed() > hash.blocksAccessed()) {
          p = hash;
       }
-      if (p.recordsOutput() > sortMerge.recordsOutput()) {
+      if (p.blocksAccessed() > sortMerge.blocksAccessed()) {
          p = sortMerge;
       }
       // p = bnl;
@@ -117,8 +123,9 @@ class TablePlanner {
    }
 
    public Plan makeBlockNestedLoopJoin(Plan current, Schema currsch) {
-      Predicate subPred = mypred.joinSubPred(currsch, myschema);
-      return new BnlJoinPlan(tx, current, myplan, subPred);
+	  Predicate subPred = mypred.joinSubPred(currsch, myschema);
+	  String[] fields = getFields(subPred, currsch);
+      return new BnlJoinPlan(tx, current, myplan, subPred, fields[0], fields[1]);
    }
 
    private Plan makeIndexSelect() {

@@ -17,12 +17,15 @@ public class BnlJoinPlan implements Plan {
     private Plan lhs, rhs;
     private Predicate joinPred;
     private Schema sch = new Schema();
+    private String lField, rField; 
 
-    public BnlJoinPlan(Transaction tx, Plan lhs, Plan rhs, Predicate joinPred) {
+    public BnlJoinPlan(Transaction tx, Plan lhs, Plan rhs, Predicate joinPred, String lField, String rField) {
         this.tx = tx;
         this.lhs = lhs;
         this.rhs = rhs;
         this.joinPred = joinPred;
+        this.lField = lField; 
+        this.rField = rField; 
         sch.addAll(lhs.schema());
         sch.addAll(rhs.schema());
     }
@@ -63,7 +66,9 @@ public class BnlJoinPlan implements Plan {
     // TODO This is the upper bound. Need better estimate
     @Override
     public int recordsOutput() {
-        return lhs.recordsOutput() * rhs.recordsOutput();
+    	int maxvals = Math.max(lhs.distinctValues(lField),
+                rhs.distinctValues(rField));
+        return (lhs.recordsOutput() * rhs.recordsOutput()) / maxvals;
     }
 
     @Override

@@ -48,6 +48,7 @@ public class SortPlan implements Plan {
       src.close();
       while (runs.size() > 1)
          runs = doAMergeIteration(runs);
+      	 
       return new SortScan(runs, comp);
    }
    
@@ -60,9 +61,16 @@ public class SortPlan implements Plan {
     * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
-      // does not include the one-time cost of sorting
       Plan mp = new MaterializePlan(tx, p); // not opened; just for analysis
-      return mp.blocksAccessed();
+      // calculate cost for sorting 
+      double numPartitions = Math.ceil((double) mp.blocksAccessed() / tx.availableBuffs());
+ 
+      
+      double x = Math.ceil(numPartitions / tx.availableBuffs()); 
+      double numMergePasses = Math.ceil(Math.log(x) / Math.log((double) tx.availableBuffs() - 1));
+      int result = (int) (mp.blocksAccessed() * (1 + numMergePasses));
+      
+      return result;
    }
    
    /**
