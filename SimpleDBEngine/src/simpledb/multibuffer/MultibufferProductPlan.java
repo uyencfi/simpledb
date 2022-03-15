@@ -115,8 +115,14 @@ public class MultibufferProductPlan implements Plan {
       return t;
    }
    
-   public String getQueryPlan(String tblname, String currQueryPlan) {
-	   return String.format("(%s \n\t multibuffer cross product with %s)", 
-			   currQueryPlan, rhs.getQueryPlan(tblname, currQueryPlan)); 
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+      String padding = " ".repeat(margin);
+       return String.format(
+               "Multibuffer cross product\n" +
+               "  -> %s\n" +
+               "  -> %s",
+               currQueryPlan.replaceAll("\n", "\n" + padding),
+               rhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding)
+       );
    }
 }

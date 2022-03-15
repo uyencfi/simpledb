@@ -45,10 +45,10 @@ public interface Plan {
     * @return the query's schema
     */
    public Schema schema();
-   
+
    /**
     * Returns the current query plan.
     * @return current query plan
     */
-   public String getQueryPlan(String tblname, String currQueryPlan);
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin);
 }

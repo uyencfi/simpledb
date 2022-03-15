@@ -89,10 +89,17 @@ public class IndexJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
-   
-   public String getQueryPlan(String tblname, String currQueryPlan) {
-	   System.out.println(currQueryPlan);
-	   return String.format("(%s \n\t index join %s)(on index %s)", 
-			   currQueryPlan, p2.getQueryPlan(tblname, currQueryPlan), joinfield); 
+
+   public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+       String padding = " ".repeat(margin);
+       return String.format(
+               "Index join\n" +
+               "  cond: %s.%s=%s\n" +
+               "  -> %s\n" +
+               "  -> %s",
+               tblname, ii.getField(), joinfield,
+               currQueryPlan.replaceAll("\n", "\n" + padding),
+               p2.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding)
+       );
    }
 }

@@ -79,18 +79,18 @@ class TablePlanner {
          return makeBlockNestedLoopJoin(current, currsch);
       }
 
-      Plan p = makeBlockNestedLoopJoin(current, currsch);
-      // Plan bnl = makeBlockNestedLoopJoin(current, currsch);
-      // p = bnl;
+      Plan p;
+      Plan bnl = makeBlockNestedLoopJoin(current, currsch);
       Plan index = makeIndexJoin(current, currsch);
       Plan sortMerge = makeMergeJoin(current, currsch);
       Plan hash = makeHashJoin(current, currsch);
 
-//      System.out.println("Bnl: " + p.recordsOutput());
-//      if (index != null) System.out.println("index: " + p.recordsOutput());
-//      System.out.println("sort-merge: " + sortMerge.recordsOutput());
-//      System.out.println("hash join: " + hash.recordsOutput());
+      System.out.println("Bnl: " + bnl.recordsOutput());
+      if (index != null) System.out.println("index: " + index.recordsOutput());
+      System.out.println("sort-merge: " + sortMerge.recordsOutput());
+      System.out.println("hash join: " + hash.recordsOutput());
 
+      p = bnl;
       if (index != null && p.recordsOutput() > index.recordsOutput()) {
          p = index;
       }
@@ -100,8 +100,8 @@ class TablePlanner {
       if (p.recordsOutput() > sortMerge.recordsOutput()) {
          p = sortMerge;
       }
-      return index;
-//      return p;
+      // p = bnl;
+      return p;
    }
 
    
@@ -126,7 +126,7 @@ class TablePlanner {
          Constant val = mypred.equatesWithConstant(fldname);
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
-            System.out.println("index on " + fldname + " used");
+            System.out.println("*index on " + fldname + " used*");
             return new IndexSelectPlan(myplan, ii, val);
          }
       }
@@ -138,9 +138,10 @@ class TablePlanner {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
-            Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            Plan p = new IndexJoinPlan(current, addSelectPred(myplan), ii, outerfield);
+            return p;
+            // p = addSelectPred(p);
+            // return addJoinPred(p, currsch);
          }
       }
       return null;
@@ -155,7 +156,7 @@ class TablePlanner {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
       // System.out.println(Arrays.toString(fields));
-      Plan p = new MergeJoinPlan(tx, current, myplan, fields[0], fields[1]);
+      Plan p = new MergeJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]);
       return p;
       // return addJoinPred(p, currsch);
    }
@@ -174,8 +175,7 @@ class TablePlanner {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
       // System.out.println(Arrays.toString(fields));
-      Plan p = new HashJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]
-      );
+      Plan p = new HashJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]);
       return p;
       // return addJoinPred(p, currsch);
    }

@@ -96,9 +96,16 @@ public class HashJoinPlan implements Plan {
     public Schema schema() {
         return schema;
     }
-    
-    public String getQueryPlan(String tblname, String currQueryPlan) {
- 	   return String.format("(%s \n\t hash join %s)(%s=%s)", 
- 			   currQueryPlan, right.getQueryPlan(tblname, currQueryPlan), lFieldName, rFieldName); 
+
+    public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
+        String padding = " ".repeat(margin);
+        return String.format(
+                "Hash join\n" +
+                "  cond: (%s = %s)\n" +
+                "  -> %s\n" +
+                "  -> %s",
+                lFieldName, rFieldName,
+                currQueryPlan.replaceAll("\n", "\n" + padding),
+                right.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
     }
 }
