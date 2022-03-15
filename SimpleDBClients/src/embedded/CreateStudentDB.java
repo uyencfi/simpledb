@@ -73,7 +73,7 @@ public class CreateStudentDB {
                  "(47, 'bharath', 220, 2021)",
                  "(48, 'david', 230, 2019)",
                  "(49, 'rushil', 230, 2021)",
-                 "(50, 'dean', 240, 2020)",
+                 "(50, 'dean', 240, 2020)"
          };
          for (int i=0; i<studvals.length; i++)
             stmt.executeUpdate(s + studvals[i]);
@@ -196,7 +196,7 @@ public class CreateStudentDB {
                  "(472, 'chem', 270)",
                  "(482, 'java', 280)",
                  "(492, 'resistors', 280)",
-                 "(502, 'msg', 290)",
+                 "(502, 'msg', 290)"
          };
          for (int i=0; i<coursevals.length; i++)
             stmt.executeUpdate(s + coursevals[i]);
@@ -257,7 +257,7 @@ public class CreateStudentDB {
                  "(473, 482, 'hartin menz', 2019)",
                  "(483, 482, 'newton', 2020)",
                  "(493, 402, 'einstein', 2022)",
-                 "(503, 512, 'brando', 2018)",
+                 "(503, 512, 'brando', 2018)"
          };
          for (int i=0; i<sectvals.length; i++)
             stmt.executeUpdate(s + sectvals[i]);
@@ -322,7 +322,7 @@ public class CreateStudentDB {
                  "(474, 24, 193, 'B+')",
                  "(484, 24, 203, 'A' )",
                  "(494, 25, 193, 'B+')",
-                 "(504, 25, 203, 'A-' )",
+                 "(504, 25, 203, 'A-' )"
          };
          
          for (int i=0; i<enrollvals.length; i++)
