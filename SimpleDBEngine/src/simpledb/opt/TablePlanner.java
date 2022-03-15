@@ -107,7 +107,7 @@ class TablePlanner {
          p = sortMerge;
       }
       // p = bnl;
-      return index;
+      return p;
    }
 
    
@@ -123,9 +123,12 @@ class TablePlanner {
    }
 
    public Plan makeBlockNestedLoopJoin(Plan current, Schema currsch) {
-	  Predicate subPred = mypred.joinSubPred(currsch, myschema);
-	  String[] fields = getFields(subPred, currsch);
-      return new BnlJoinPlan(tx, current, myplan, subPred, fields[0], fields[1]);
+      Predicate subPred = mypred.joinSubPred(currsch, myschema);
+      // myplan is the new table to be "compounded" onto the query plan
+      // here myplan is the LHS (rather than RHS)
+      // This will affect the query plan printing in BnlJoinPlan (invert LHS and RHS).
+      String[] fields = getFields(subPred, currsch);
+      return new BnlJoinPlan(tx, addSelectPred(myplan), current, subPred, fields[1], fields[0]);
    }
 
    private Plan makeIndexSelect() {

@@ -86,12 +86,22 @@ public class BnlJoinPlan implements Plan {
     
     public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
         String padding = " ".repeat(margin);
+        // return String.format(
+        //         "Bnl join\n" +
+        //         "  cond: %s\n" +
+        //         "  -> %s\n" +
+        //         "  -> %s",
+        //         joinPred, lhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding),
+        //         currQueryPlan.replaceAll("\n", "\n" + padding));
+
         return String.format(
                 "Bnl join\n" +
                 "  cond: %s\n" +
                 "  -> %s\n" +
                 "  -> %s",
-                joinPred, currQueryPlan.replaceAll("\n", "\n" + padding),
-                rhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
+                joinPred,
+                currQueryPlan.replaceAll("\n", "\n" + padding),
+                lhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
+
     }
 }

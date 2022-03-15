@@ -17,7 +17,7 @@ public class MultibufferProductScan implements Scan {
    private String filename;
    private Layout layout;
    private int chunksize, nextblknum, filesize;
-   
+   private boolean isEmpty;   // flag for when LHS has no records, so there's no point in creating ChunkScans
    
    /**
     * Creates the scan class for the product of the LHS scan and a table.
@@ -38,14 +38,19 @@ public class MultibufferProductScan implements Scan {
    }
    
    /**
-    * Positions the scan before the first record.
+    * Positions the scan before the first record, if the LHS scan is not empty.
     * That is, the LHS scan is positioned at its first record,
     * and the RHS scan is positioned before the first record of the first chunk.
+    * If the LHS scan is empty, then do nothing.
     * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       nextblknum = 0;
-      useNextChunk();
+      lhsscan.beforeFirst();
+      isEmpty = !lhsscan.next();
+      if (!isEmpty) {
+         useNextChunk();
+      }
    }
    
    /**
@@ -57,6 +62,8 @@ public class MultibufferProductScan implements Scan {
     * @see Scan#next()
     */
    public boolean next() {
+      if (isEmpty) return false;
+
       while (!prodscan.next()) 
          if (!useNextChunk())
          return false;
@@ -64,13 +71,15 @@ public class MultibufferProductScan implements Scan {
    }
    
    /**
-    * Closes the current scans.
+    * Closes the current scan. If this scan is empty in the first place,
+    * there is nothing to close.
     * @see Scan#close()
     */
    public void close() {
+      if (isEmpty) return;
       prodscan.close();
    }
-   
+
    /** 
     * Returns the value of the specified field.
     * The value is obtained from whichever scan

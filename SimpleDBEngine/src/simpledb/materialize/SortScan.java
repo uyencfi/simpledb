@@ -12,15 +12,12 @@ import simpledb.record.RID;
  * The Scan class for the <i>sort</i> operator.
  * @author Edward Sciore
  */
-/**
- * @author sciore
- *
- */
 public class SortScan implements Scan {
    private UpdateScan s1, s2=null, currentscan=null;
    private RecordComparator comp;
    private boolean hasmore1, hasmore2=false;
    private List<RID> savedposition;
+   private boolean isEmpty;
    
    /**
     * Create a sort scan, given a list of 1 or 2 runs.
@@ -30,6 +27,10 @@ public class SortScan implements Scan {
     * @param comp the record comparator
     */
    public SortScan(List<TempTable> runs, RecordComparator comp) {
+      if (runs.size() == 0) {
+         isEmpty = true;
+         return;
+      }
       this.comp = comp;
       s1 = (UpdateScan) runs.get(0).open();
       hasmore1 = s1.next();
@@ -47,6 +48,8 @@ public class SortScan implements Scan {
     * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
+      if (isEmpty) return;
+
       currentscan = null;
       s1.beforeFirst();
       hasmore1 = s1.next();
@@ -64,6 +67,8 @@ public class SortScan implements Scan {
     * @see Scan#next()
     */
    public boolean next() {
+      if (isEmpty) return false;
+
       if (currentscan != null) {
          if (currentscan == s1)
             hasmore1 = s1.next();
@@ -91,6 +96,8 @@ public class SortScan implements Scan {
     * @see Scan#close()
     */
    public void close() {
+      if (isEmpty) return;
+
       s1.close();
       if (s2 != null)
          s2.close();
@@ -136,6 +143,7 @@ public class SortScan implements Scan {
     * so that it can be restored at a later time.
     */
    public void savePosition() {
+      assert !isEmpty;
       RID rid1 = s1.getRid();
       RID rid2 = (s2 == null) ? null : s2.getRid();
       savedposition = Arrays.asList(rid1,rid2);
@@ -145,6 +153,7 @@ public class SortScan implements Scan {
     * Move the scan to its previously-saved position.
     */
    public void restorePosition() {
+      assert !isEmpty;
       RID rid1 = savedposition.get(0);
       RID rid2 = savedposition.get(1);
       s1.moveToRid(rid1);

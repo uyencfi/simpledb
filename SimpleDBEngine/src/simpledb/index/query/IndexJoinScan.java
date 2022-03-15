@@ -17,7 +17,8 @@ public class IndexJoinScan implements Scan {
    private Scan lhs;
    private Index idx;
    private String joinfield;
-   private TableScan rhs;  
+   private TableScan rhs;
+   private boolean isEmpty;   // flag for when LHS has no records, so there's no point in setting the index
    
    /**
     * Creates an index join scan for the specified LHS scan and 
@@ -40,12 +41,15 @@ public class IndexJoinScan implements Scan {
     * That is, the LHS scan will be positioned at its
     * first record, and the index will be positioned
     * before the first record for the join value.
+    * If the outer scan i.e. LHS is empty, then do nothing.
     * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
       lhs.beforeFirst();
-      lhs.next();
-      resetIndex();
+      isEmpty = !lhs.next();
+      if (!isEmpty) {
+         resetIndex();
+      }
    }
    
    /**
@@ -57,6 +61,8 @@ public class IndexJoinScan implements Scan {
     * @see Scan#next()
     */
    public boolean next() {
+      if (isEmpty) return false;
+
       while (true) {
          if (idx.next()) {
             rhs.moveToRid(idx.getDataRid());
@@ -119,6 +125,7 @@ public class IndexJoinScan implements Scan {
    }
 
    private void resetIndex() {
+      assert !isEmpty;
       Constant searchkey = lhs.getVal(joinfield);
       idx.beforeFirst(searchkey);
    }

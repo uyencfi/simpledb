@@ -1,5 +1,7 @@
 package simpledb.plan;
 
+import java.sql.SQLException;
+
 import simpledb.multibuffer.ChunkScan;
 import simpledb.query.*;
 import simpledb.record.Layout;
@@ -18,6 +20,7 @@ public class BnlJoinScan implements Scan {
     private Layout layout;
     private Predicate joinPred;
     private int chunksize, nextblknum, filesize;
+    private boolean isEmpty;   // flag for when RHS i.e. inner table has no records. Then there's no point in creating ChunkScans
 
     /**
      * Creates a Scan for Block Nested-loop Join.
@@ -37,19 +40,28 @@ public class BnlJoinScan implements Scan {
         this.joinPred = joinPred;
         filesize = tx.size(filename);
         chunksize = tx.availableBuffs() - 2;
+        // System.out.println("chunksize: " + chunksize);
+        if (chunksize <= 0) {
+            throw new RuntimeException("Not enough buffer");
+        }
         beforeFirst();
     }
 
     /**
-     * Positions the scan before the first record.
+     * Positions the scan before the first record, if the RHS scan is not empty.
      * That is, the LHS scan is positioned before the first record of the first chunk,
      * and the RHS scan is positioned at its first record.
+     * If the RHS scan is empty, then do nothing.
      * @see Scan#beforeFirst()
      */
     @Override
     public void beforeFirst() {
         nextblknum = 0;
-        useNextChunk();
+        rhsScan.beforeFirst();
+        isEmpty = !rhsScan.next();
+        if (!isEmpty) {
+            useNextChunk();
+        }
     }
 
     /**
@@ -61,6 +73,8 @@ public class BnlJoinScan implements Scan {
      */
     @Override
     public boolean next() {
+        if (isEmpty) return false;
+
         while (!selectFromChunkScan.next()) {
             if (!useNextChunk()) {
                 // System.out.println("BNL output " + COUNT + " records");
@@ -74,6 +88,7 @@ public class BnlJoinScan implements Scan {
 
     // Advance to the next chunk on the LHS table
     private boolean useNextChunk() {
+        assert !isEmpty;
         if (nextblknum >= filesize) {   // We've reached the end of LHS
             return false;
         }
@@ -116,8 +131,14 @@ public class BnlJoinScan implements Scan {
         return selectFromChunkScan.hasField(fldname);
     }
 
+    /**
+     * Closes the current chunk scan.
+     * If the Bnl scan is empty in the first place, there is nothing to close.
+     * @see Scan#close()
+     */
     @Override
     public void close() {
+        if (isEmpty) return;
         selectFromChunkScan.close();
     }
 }

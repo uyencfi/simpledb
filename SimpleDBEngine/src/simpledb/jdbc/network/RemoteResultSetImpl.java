@@ -51,7 +51,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
     * @see RemoteResultSet#getInt(String)
     */
    public int getInt(String fldname) throws RemoteException {
-		try {
+      try {
 	      fldname = fldname.toLowerCase(); // to ensure case-insensitivity
 	      return s.getInt(fldname);
       }
@@ -67,7 +67,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
     * @see RemoteResultSet#getInt(String)
     */
    public String getString(String fldname) throws RemoteException {
-		try {
+      try {
 	      fldname = fldname.toLowerCase(); // to ensure case-insensitivity
 	      return s.getString(fldname);
       }
