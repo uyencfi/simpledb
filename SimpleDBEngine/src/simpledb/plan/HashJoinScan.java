@@ -9,7 +9,7 @@ import simpledb.query.*;
 import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 
-public class MyHashScan implements Scan {
+public class HashJoinScan implements Scan {
     /* Primes for hashing (used in partition phase). */
     private static final int[] PRIMES = {17, 31, 53, 67, 89, 131, 173, 211, 269, 331, 379, 431, 467, 499};
     private int PRIME1;
@@ -40,7 +40,7 @@ public class MyHashScan implements Scan {
      * @param lField the join field in LHS
      * @param rField the join field in RHS
      */
-    public MyHashScan(Transaction tx, Scan left, Scan right, Schema lSchema, Schema rSchema, String lField, String rField) {
+    public HashJoinScan(Transaction tx, Scan left, Scan right, Schema lSchema, Schema rSchema, String lField, String rField) {
         this.tx = tx;
         this.L = left;
         this.R = right;
@@ -184,7 +184,7 @@ public class MyHashScan implements Scan {
         }
         Scan leftPartition = lPartitions[failedNum].open();
         Scan rightPartition = rPartitions[failedNum].open();
-        currentScan = new MyHashScan(tx, leftPartition, rightPartition, lSchema, rSchema, lField, rField);
+        currentScan = new HashJoinScan(tx, leftPartition, rightPartition, lSchema, rSchema, lField, rField);
         currentScan.beforeFirst();
         failedPartitionNums.remove(0);
     }

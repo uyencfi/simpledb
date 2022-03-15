@@ -50,7 +50,7 @@ public class HashJoinPlan implements Plan {
         Scan rScan = right.open();
         Schema lsch = left.schema();
         Schema rsch = right.schema();
-        return new MyHashScan(tx, lScan, rScan, lsch, rsch, lFieldName, rFieldName);
+        return new HashJoinScan(tx, lScan, rScan, lsch, rsch, lFieldName, rFieldName);
     }
 
     /**
