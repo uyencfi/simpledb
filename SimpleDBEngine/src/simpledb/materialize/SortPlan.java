@@ -174,18 +174,15 @@ public class SortPlan implements Plan {
       }
       
       boolean next = src.next();
-      
       if (isDistinct) {
 	      while (next) {
-	    	 // System.out.println("check " + src.getVal("majorid"));
 	    	 for (String fldname : sch.fields()) {
-	             if (store.get(fldname) != src.getVal(fldname)) {
+	             if (!store.get(fldname).equals(src.getVal(fldname))) {
 	            	 return next;
 	             }
 	          }
 	    	 next = src.next();
 	      }
-	      // System.out.println("end ");
       }
       
       return next;

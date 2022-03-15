@@ -86,15 +86,15 @@ class TablePlanner {
       Plan sortMerge = makeMergeJoin(current, currsch);
       Plan hash = makeHashJoin(current, currsch);
 
-      System.out.println("Bnl: " + bnl.recordsOutput());
-      if (index != null) System.out.println("index: " + index.recordsOutput());
-      System.out.println("sort-merge: " + sortMerge.recordsOutput());
-      System.out.println("hash join: " + hash.recordsOutput());
+//      System.out.println("Bnl: " + bnl.recordsOutput());
+//      if (index != null) System.out.println("index: " + index.recordsOutput());
+//      System.out.println("sort-merge: " + sortMerge.recordsOutput());
+//      System.out.println("hash join: " + hash.recordsOutput());
 
-      System.out.println("blocks accessed"); 
-      if (index != null) System.out.println("index: " + index.blocksAccessed());
-      System.out.println("sort-merge: " + sortMerge.blocksAccessed());
-      System.out.println("hash join: " + hash.blocksAccessed());
+//      System.out.println("blocks accessed"); 
+//      if (index != null) System.out.println("index: " + index.blocksAccessed());
+//      System.out.println("sort-merge: " + sortMerge.blocksAccessed());
+//      System.out.println("hash join: " + hash.blocksAccessed());
       
       p = bnl;
       if (index != null && p.blocksAccessed() > index.blocksAccessed()) {
@@ -107,7 +107,7 @@ class TablePlanner {
          p = sortMerge;
       }
       // p = bnl;
-      return p;
+      return index;
    }
 
    

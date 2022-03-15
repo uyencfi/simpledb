@@ -34,8 +34,8 @@ public class CreateStudentDB {
                  "(8, 'pat', 20, 2019)",
                  "(9, 'lee', 10, 2021)",
                  "(10, 'leean', 40, 2021)",
-                 "(11, 'joey', 40, 2021)",
-                 "(12, 'amie', 50, 2020)",
+                 "(11, 'joey', 50, 2021)",
+                 "(12, 'amie', 40, 2020)",
                  "(13, 'maxim', 50, 2022)",
                  "(14, 'sueann', 60, 2022)",
                  "(15, 'bobie', 60, 2018)",
@@ -79,6 +79,10 @@ public class CreateStudentDB {
             stmt.executeUpdate(s + studvals[i]);
          System.out.println("STUDENT records inserted.");
 
+         s = "create index idxDid on dept(did) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("index idxDid created on dept(did) btree");
+         
          s = "create table DEPT(DId int, DName varchar(20))";
          stmt.executeUpdate(s);
          System.out.println("Table DEPT created.");

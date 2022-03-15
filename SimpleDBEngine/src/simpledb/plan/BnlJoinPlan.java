@@ -2,7 +2,6 @@ package simpledb.plan;
 
 import simpledb.materialize.MaterializePlan;
 import simpledb.materialize.TempTable;
-import simpledb.multibuffer.MultibufferProductScan;
 import simpledb.query.Predicate;
 import simpledb.query.Scan;
 import simpledb.query.UpdateScan;
