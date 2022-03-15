@@ -80,12 +80,6 @@ public class BnlJoinPlan implements Plan {
         return sch;
     }
     
-    public String getQueryPlan(String tblname, String currQueryPlan) {
-        return String.format("(%s \n\t block nested loop join %s)(%s)",
-                currQueryPlan, rhs.getQueryPlan(tblname, currQueryPlan), this.joinPred);
-    }
-
-    @Override
     public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
         String padding = " ".repeat(margin);
         return String.format(

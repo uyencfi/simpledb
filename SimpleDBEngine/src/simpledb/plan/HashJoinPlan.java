@@ -96,13 +96,7 @@ public class HashJoinPlan implements Plan {
     public Schema schema() {
         return schema;
     }
-    
-    public String getQueryPlan(String tblname, String currQueryPlan) {
- 	   return String.format("(%s \n\t hash join %s)(%s=%s)",
- 			   currQueryPlan, right.getQueryPlan(tblname, currQueryPlan), lFieldName, rFieldName);
-    }
 
-    @Override
     public String getQueryPlan(String tblname, String currQueryPlan, int margin) {
         String padding = " ".repeat(margin);
         return String.format(

@@ -22,7 +22,6 @@ import simpledb.tx.Transaction;
 public class HeuristicQueryPlanner implements QueryPlanner {
    private Collection<TablePlanner> tableplanners = new ArrayList<>();
    private MetadataMgr mdm;
-   private String queryPlan = "";
 
    private String queryPlanIndent = "";
    private static int indentLevel = 5;
@@ -67,7 +66,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       if (!data.groupByFields().isEmpty() || !data.aggregateFields().isEmpty()) {
          // System.out.println("group by plan created");
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregateFields());
-         this.queryPlan = p.getQueryPlan("", this.queryPlan);
 
          this.queryPlanIndent = p.getQueryPlan("", this.queryPlanIndent, indentLevel);
       }
@@ -76,14 +74,11 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       List<String> projectNames = data.fields();
       projectNames.addAll(data.getAggregatedFieldNames());
       p = new ProjectPlan(p, projectNames);
-      this.queryPlan = p.getQueryPlan("", this.queryPlan);
 
       this.queryPlanIndent = p.getQueryPlan("", this.queryPlanIndent, indentLevel);
 
       // If no need to sort or get distinct, just return p.
       if (data.sorts().isEmpty() && !data.getIsDistinct()) {
-         System.out.println(queryPlan + "\n");
-         System.out.println("=====================");
          System.out.println(queryPlanIndent + "\n");
          return p;
       }
@@ -101,12 +96,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 6. Order by and remove duplicates if distinct specified
       p = new SortPlan(tx, p, sortMap, data.getIsDistinct());
-      this.queryPlan = p.getQueryPlan("", this.queryPlan);
 
       this.queryPlanIndent = p.getQueryPlan("", this.queryPlanIndent, indentLevel);
 
-      System.out.println(this.queryPlan + "\n");
-      System.out.println("=====================");
       System.out.println(queryPlanIndent + "\n");
       return p;
    }
@@ -121,7 +113,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
-      this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
 
       this.queryPlanIndent = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlanIndent, 0);
       tableplanners.remove(besttp);
@@ -139,7 +130,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       if (bestplan != null) {
-         this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
 
          this.queryPlanIndent = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlanIndent, indentLevel);
       }
@@ -157,7 +147,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
-      this.queryPlan = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlan);
 
       this.queryPlanIndent = bestplan.getQueryPlan(besttp.getTblname(), this.queryPlanIndent, indentLevel);
       tableplanners.remove(besttp);
