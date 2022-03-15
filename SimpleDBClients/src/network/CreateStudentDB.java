@@ -14,7 +14,7 @@ public class CreateStudentDB {
 
       try (Connection conn = d.connect(url, null);
             Statement stmt = conn.createStatement()) {
-         String s = "create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)";
+         String s = "create table STUDENT(SId int, SName varchar(16), MajorId int, GradYear int)";
          stmt.executeUpdate(s);
          System.out.println("Table STUDENT created.");
 
@@ -79,7 +79,7 @@ public class CreateStudentDB {
             stmt.executeUpdate(s + studvals[i]);
          System.out.println("STUDENT records inserted.");
 
-         s = "create table DEPT(DId int, DName varchar(8))";
+         s = "create table DEPT(DId int, DName varchar(20))";
          stmt.executeUpdate(s);
          System.out.println("Table DEPT created.");
 
@@ -201,7 +201,7 @@ public class CreateStudentDB {
             stmt.executeUpdate(s + coursevals[i]);
          System.out.println("COURSE records inserted.");
 
-         s = "create table SECTION(SectId int, CourseId int, Prof varchar(8), YearOffered int)";
+         s = "create table SECTION(SectId int, CourseId int, Prof varchar(12), YearOffered int)";
          stmt.executeUpdate(s);
          System.out.println("Table SECTION created.");
 
