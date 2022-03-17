@@ -16,7 +16,8 @@ public class BnlJoinPlan implements Plan {
     private Plan lhs, rhs;
     private Predicate joinPred;
     private Schema sch = new Schema();
-    private String lField, rField; 
+    private String lField, rField;
+    private boolean lhsHasTuples = false;
 
     public BnlJoinPlan(Transaction tx, Plan lhs, Plan rhs, Predicate joinPred, String lField, String rField) {
         this.tx = tx;
@@ -31,11 +32,11 @@ public class BnlJoinPlan implements Plan {
 
     @Override
     public Scan open() {
-        // Multibuffer: The method open materializes both the left- side and right-side records
+        // Bnl: The method open materializes both the left- side and right-side records
         // the left side as a MaterializeScan and the right side as a temporary table.
         Scan rightScan = rhs.open();
         TempTable tt = copyRecordsFrom(lhs);
-        return new BnlJoinScan(tx, tt.tableName(), tt.getLayout(), rightScan, joinPred);
+        return new BnlJoinScan(tx, tt.tableName(), tt.getLayout(), rightScan, joinPred, lhsHasTuples);
     }
 
     private TempTable copyRecordsFrom(Plan p) {
@@ -44,6 +45,7 @@ public class BnlJoinPlan implements Plan {
         TempTable t = new TempTable(tx, sch);
         UpdateScan dest = (UpdateScan) t.open();
         while (src.next()) {
+            lhsHasTuples = true;
             dest.insert();
             for (String fldname : sch.fields())
                 dest.setVal(fldname, src.getVal(fldname));
@@ -101,7 +103,17 @@ public class BnlJoinPlan implements Plan {
                 "  -> %s",
                 joinPred,
                 currQueryPlan.replaceAll("\n", "\n" + padding),
-                lhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
+                rhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding)
+        );
+
+        // return String.format(
+        //         "Bnl join\n" +
+        //         "  cond: %s\n" +
+        //         "  -> %s\n" +
+        //         "  -> %s",
+        //         joinPred,
+        //         currQueryPlan.replaceAll("\n", "\n" + padding),
+        //         lhs.getQueryPlan(tblname, currQueryPlan, margin + 5).replaceAll("\n", "\n" + padding));
 
     }
 }

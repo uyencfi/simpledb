@@ -20,7 +20,7 @@ public class BnlJoinScan implements Scan {
     private Layout layout;
     private Predicate joinPred;
     private int chunksize, nextblknum, filesize;
-    private boolean isEmpty;   // flag for when RHS i.e. inner table has no records. Then there's no point in creating ChunkScans
+    private boolean isEmpty;   // flag for when either table has no records, in which case there's no point in creating ChunkScans
 
     /**
      * Creates a Scan for Block Nested-loop Join.
@@ -30,7 +30,7 @@ public class BnlJoinScan implements Scan {
      * @param rhsScan   the RHS scan
      * @param joinPred  the predicate that joins LHS and RHS table
      */
-    public BnlJoinScan(Transaction tx, String tblname, Layout layout, Scan rhsScan, Predicate joinPred) {
+    public BnlJoinScan(Transaction tx, String tblname, Layout layout, Scan rhsScan, Predicate joinPred, boolean lhsHasTuples) {
         COUNT = 1;
         this.tx = tx;
         this.lshScan = null;
@@ -38,6 +38,7 @@ public class BnlJoinScan implements Scan {
         this.filename = tblname + ".tbl";
         this.layout = layout;
         this.joinPred = joinPred;
+        this.isEmpty = !lhsHasTuples;
         filesize = tx.size(filename);
         chunksize = tx.availableBuffs() - 2;
         // System.out.println("chunksize: " + chunksize);
@@ -58,7 +59,7 @@ public class BnlJoinScan implements Scan {
     public void beforeFirst() {
         nextblknum = 0;
         rhsScan.beforeFirst();
-        isEmpty = !rhsScan.next();
+        isEmpty = isEmpty || !rhsScan.next();   // constructor has checked if LHS is empty. Here we add another check if RHS is empty.
         if (!isEmpty) {
             useNextChunk();
         }

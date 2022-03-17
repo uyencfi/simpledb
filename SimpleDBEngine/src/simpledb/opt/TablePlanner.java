@@ -128,7 +128,7 @@ class TablePlanner {
       // here myplan is the LHS (rather than RHS)
       // This will affect the query plan printing in BnlJoinPlan (invert LHS and RHS).
       String[] fields = getFields(subPred, currsch);
-      return new BnlJoinPlan(tx, addSelectPred(myplan), current, subPred, fields[1], fields[0]);
+      return new BnlJoinPlan(tx, current, addSelectPred(myplan), subPred, fields[0], fields[1]);
    }
 
    private Plan makeIndexSelect() {
