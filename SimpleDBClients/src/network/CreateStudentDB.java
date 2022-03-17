@@ -144,6 +144,11 @@ public class CreateStudentDB {
          stmt.executeUpdate(s);
          System.out.println("Table COURSE created.");
 
+         // s = "create index idxCourseDeptid on course(deptid)";
+         // stmt.executeUpdate(s);
+         // System.out.println("index idxCourseDeptid created on course(deptid) using hash");
+
+
          s = "insert into COURSE(CId, Title, DeptId) values ";
          String[] coursevals = {
                  "(12, 'db systems', 10)",

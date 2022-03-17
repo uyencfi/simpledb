@@ -64,7 +64,6 @@ public class BnlJoinPlan implements Plan {
         return leftBlocks + (numChunks * rhs.blocksAccessed());
     }
 
-    // TODO This is the upper bound. Need better estimate
     @Override
     public int recordsOutput() {
     	int maxvals = Math.max(lhs.distinctValues(lField),

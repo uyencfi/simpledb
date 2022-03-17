@@ -95,7 +95,9 @@ class TablePlanner {
 //      if (index != null) System.out.println("index: " + index.blocksAccessed());
 //      System.out.println("sort-merge: " + sortMerge.blocksAccessed());
 //      System.out.println("hash join: " + hash.blocksAccessed());
-      
+
+      // if (index != null) return index;
+
       p = bnl;
       if (index != null && p.blocksAccessed() > index.blocksAccessed()) {
          p = index;
