@@ -30,7 +30,6 @@ public class Predicate {
 
    /**
     * Get the first term
-    * // TODO Remove hardcoding
     */
    public Term getFirst() {
       return terms.get(0);
@@ -59,7 +58,7 @@ public class Predicate {
    }
 
    /** 
-    * Calculate the extent to which selecting on the predicate 
+    * Calculate the extent to which selecting on the predicate
     * reduces the number of records output by a query.
     * For example if the reduction factor is 2, then the
     * predicate cuts the size of the output in half.

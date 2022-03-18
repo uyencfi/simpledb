@@ -75,7 +75,6 @@ class TablePlanner {
          return null;
       }
 
-//      System.out.println("Has Non-equality pred: " + joinpred.hasNonEqualityPredicate());
       if (joinpred.hasNonEqualityPredicate()) {
          return makeBlockNestedLoopJoin(current, currsch);
       }
@@ -127,8 +126,6 @@ class TablePlanner {
    public Plan makeBlockNestedLoopJoin(Plan current, Schema currsch) {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       // myplan is the new table to be "compounded" onto the query plan
-      // here myplan is the LHS (rather than RHS)
-      // This will affect the query plan printing in BnlJoinPlan (invert LHS and RHS).
       String[] fields = getFields(subPred, currsch);
       return new BnlJoinPlan(tx, current, addSelectPred(myplan), subPred, fields[0], fields[1]);
    }
@@ -167,7 +164,6 @@ class TablePlanner {
    private Plan makeMergeJoin(Plan current, Schema currsch) {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
-      // System.out.println(Arrays.toString(fields));
       Plan p = new MergeJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]);
       return p;
       // return addJoinPred(p, currsch);
@@ -186,10 +182,8 @@ class TablePlanner {
    private Plan makeHashJoin(Plan current, Schema currsch) {
       Predicate subPred = mypred.joinSubPred(currsch, myschema);
       String[] fields = getFields(subPred, currsch);
-      // System.out.println(Arrays.toString(fields));
       Plan p = new HashJoinPlan(tx, current, addSelectPred(myplan), fields[0], fields[1]);
       return p;
-      // return addJoinPred(p, currsch);
    }
 
 

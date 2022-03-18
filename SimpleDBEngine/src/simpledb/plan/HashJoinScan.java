@@ -27,7 +27,7 @@ public class HashJoinScan implements Scan {
     private List<Integer> failedPartitionNums;   // Some partition pairs are too big, and need to be recursively hash joined.
                                                  // This list keeps track of those partitions.
 
-    int currPartition;   // Current partition cursor. We lazy join, so we need to know which partition is currently being joined/
+    int currPartition;   // The pointer to the Current partition. We join on the fly, so we need to know which partition is currently being joined
     Scan currentScan;     // The scan that will yield resultant records. This scan is built from joining the partitions.
 
     /**
@@ -57,7 +57,6 @@ public class HashJoinScan implements Scan {
 
         choosePrimesForHash();
         runPartitionPhase();
-        // runJoinPhase();
         JoinMore();
     }
 
@@ -77,7 +76,7 @@ public class HashJoinScan implements Scan {
      * @param numBuckets the number of buckets in the partition
      * @return the bucket this value should go into.
      */
-    private int hashFunc1(Constant val, int numBuckets) {
+    private int hashFunc(Constant val, int numBuckets) {
         int h = val.hashCode();
         return ((h * PRIME1) % PRIME2) % numBuckets;
     }
@@ -104,7 +103,7 @@ public class HashJoinScan implements Scan {
 
         // Hash records one by one, and put them in their partition
         while (s.next()) {
-            int bucket = hashFunc1(s.getVal(fieldName), numBuff - 1);
+            int bucket = hashFunc(s.getVal(fieldName), numBuff - 1);
             UpdateScan partition = tempScans[bucket];
             partition.insert();
             for (String f : sch.fields()) {
@@ -146,28 +145,21 @@ public class HashJoinScan implements Scan {
             if (fit != null) {      // Found a small enough partition
                 currPartition = i + 1;
                 if (currentScan != null) currentScan.close();
-                // TODO implement hashmap
                 currentScan = new SelectScan(
                         new MultibufferProductScan(tx, other.open(), fit.tableName(), fit.getLayout()),
                         new Predicate(new Term(new Expression(lField), new Expression(rField), "=")));
                 currentScan.beforeFirst();
                 return;
             } else {        // This pair of partition is too big, skip them. We'll recursively HJ them later.
-                // System.out.println("Neither the left nor the right partition " + i + " fits in B-2 buffers");
                 failedPartitionNums.add(i);
                 currPartition = i + 1;
             }
         }
 
-        // System.out.println("Iterated through all partitions");
-        // TODO is currentScan ever null? Yes, when all partitions are too big. All partitions are in failed
-        // currentScan = null;
         if (failedPartitionNums.isEmpty()) {      // no failed partitions. DONE !
-            // System.out.println("No more failed partitions");
-            // TODO should close ?
             currentScan.close();
             currentScan = null;
-        } else {       // else, there are some failed partitions. Cannot stop yet. Must also join them!
+        } else {       // else, there are some failed partitions. Apply recursive HJ on them.
             recursiveHashJoin();
         }
     }
@@ -198,15 +190,13 @@ public class HashJoinScan implements Scan {
      * @see simpledb.query.Scan#next()
      */
     public boolean next() {
-        // System.out.println("curr partition: " + currPartition + ", buff=" + numBuff);
         if (currentScan == null) {     // no more partitions
             return false;
         }
         if (currentScan.next())
             return true;
         else {
-            // currentScan.close();
-            JoinMore();
+            JoinMore();     // no more records in the current scan. Try joining some more.
             return next();
         }
     }
@@ -226,9 +216,6 @@ public class HashJoinScan implements Scan {
      * @see simpledb.query.Scan#close()
      */
     public void close() {
-//         if (currentScan != null) currentScan.close();
-//         L.close();
-//         R.close();
     }
 
     /**

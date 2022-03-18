@@ -54,8 +54,7 @@ public class HashJoinPlan implements Plan {
     }
 
     /**
-     * Estimates the number of block accesses in the hash-join.
-     * TODO remove hardcode 3
+     * Estimates the number of block accesses in the hash-join
      * The estimated formula is (no deduplication):
      * <pre> 3 * (|R| + |S|) </pre>
      * @see simpledb.plan.Plan#blocksAccessed()
